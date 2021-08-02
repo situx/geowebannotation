@@ -1,4 +1,4 @@
-from qgis.gui import QgsMapToolEmitPoint, QgsMapCanvas, QgsRubberBand,QgsMapTool
+from qgis.gui import QgsMapToolEmitPoint, QgsMapCanvas, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature
 from qgis.PyQt.QtCore import pyqtSignal,QUrl,Qt
 from qgis.PyQt.QtGui import QColor
 from qgis.PyQt.QtWidgets import QInputDialog
@@ -12,7 +12,7 @@ class CircleMapTool(QgsMapTool):
     move = pyqtSignal()
 
     def __init__(self, iface, segments):
-        canvas = iface
+        canvas = iface.mapCanvas()
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
@@ -83,7 +83,7 @@ class PolygonMapTool(QgsMapTool):
     move = pyqtSignal()
 
     def __init__(self, iface):
-        canvas = iface
+        canvas = iface.mapCanvas()
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
@@ -139,7 +139,7 @@ class RectangleMapTool(QgsMapToolEmitPoint):
     chosen=False
 
     def __init__(self, canvas):
-        self.canvas = canvas
+        self.canvas = canvas.mapCanvas()
         QgsMapToolEmitPoint.__init__(self, self.canvas)
 
         self.rubberBand = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
@@ -213,7 +213,29 @@ class RectangleMapTool(QgsMapToolEmitPoint):
     def deactivate(self):
         QgsMapTool.deactivate(self)
         self.deactivated.emit()
+
+
+class SelectMapTool(QgsMapToolIdentifyFeature):
+    
+    def __init__(self, iface):
+        self.iface = iface
+        self.canvas = self.iface.mapCanvas()
+        self.layer = self.iface.activeLayer()
+        QgsMapToolIdentifyFeature.__init__(self, self.canvas, self.layer)
+        self.iface.currentLayerChanged.connect(self.active_changed)
         
+    def active_changed(self, layer):
+        self.layer.removeSelection()
+        if isinstance(layer, QgsVectorLayer) and layer.isSpatial():
+            self.layer = layer
+            self.setLayer(self.layer)
+            
+    def canvasPressEvent(self, event):
+        found_features = self.identify(event.x(), event.y(), [self.layer], QgsMapToolIdentify.TopDownAll)
+        self.layer.selectByIds([f.mFeature.id() for f in found_features], QgsVectorLayer.AddToSelection)
+        
+    def deactivate(self):
+        self.layer.removeSelection()        
         
 class PointMapTool(QgsMapTool):
     '''Outil de sélection par polygone, tiré de selectPlusFr'''
@@ -222,7 +244,7 @@ class PointMapTool(QgsMapTool):
     move = pyqtSignal()
 
     def __init__(self, iface):
-        canvas = iface
+        canvas = iface.mapCanvas()
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
