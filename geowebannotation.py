@@ -34,6 +34,7 @@ from .geowebannotationtool import CircleMapTool
 from .geowebannotationtool import RectangleMapTool
 from .geowebannotationtool import PolygonMapTool
 from .geowebannotationtool import PointMapTool
+from .geowebannotationtool import SelectMapTool
 import os.path
 
 
@@ -57,7 +58,7 @@ class GeoWebAnnotation:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'SaveAttribute_{}.qm'.format(locale))
+            'GeoWebAnnotation_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -66,7 +67,7 @@ class GeoWebAnnotation:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&Save Attribute')
+        self.menu = self.tr(u'&GeoWebAnnotation')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -85,7 +86,7 @@ class GeoWebAnnotation:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('SaveAttribute', message)
+        return QCoreApplication.translate('GeoWebAnnotation', message)
 
 
     def create_annotation_layer(self,layername):
@@ -93,10 +94,21 @@ class GeoWebAnnotation:
           
     def export_annotation_layer(self,layername):
         print("Export annotation layer")
-        
-    def choose_mapping_tool(self,toolname):
-        print("Toolname")
-        
+
+    def choose_point_mapping_tool(self):
+        self.iface.mapCanvas().setMapTool( PointMapTool(self.iface) )
+
+    def choose_polygon_mapping_tool(self):
+        self.iface.mapCanvas().setMapTool( PolygonMapTool(self.iface) )
+
+    def choose_circle_mapping_tool(self):
+        self.iface.mapCanvas().setMapTool( CircleMapTool(self.iface,1) )
+
+    def choose_rectangle_mapping_tool(self):
+        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface) )
+
+    def choose_select_mapping_tool(self):
+        self.iface.mapCanvas().setMapTool( SelectMapTool(self.iface) )
 
     def add_action(
         self,
@@ -178,8 +190,32 @@ class GeoWebAnnotation:
         icon_path = ':/plugins/save_attributes/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'Save Attributes as CSV'),
+            text=self.tr(u'GeoWebAnnotation'),
             callback=self.run,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            icon_path,
+            text=self.tr(u'PolygonMapTool'),
+            callback=self.choose_polygon_mapping_tool,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            icon_path,
+            text=self.tr(u'PointMapTool'),
+            callback=self.choose_point_mapping_tool,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            icon_path,
+            text=self.tr(u'SelectMapTool'),
+            callback=self.choose_select_mapping_tool,
+            parent=self.iface.mainWindow())
+        
+        self.add_action(
+            icon_path,
+            text=self.tr(u'CircleMapTool'),
+            callback=self.choose_circle_mapping_tool,
             parent=self.iface.mainWindow())
 
         # will be set False in run()
@@ -190,7 +226,7 @@ class GeoWebAnnotation:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginVectorMenu(
-                self.tr(u'&Save Attribute'),
+                self.tr(u'&GeoWebAnnotation'),
                 action)
             self.iface.removeToolBarIcon(action)
 
