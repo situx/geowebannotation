@@ -96,6 +96,7 @@ class GeoWebAnnotation:
         
     def choose_mapping_tool(self,toolname):
         print("Toolname")
+        
 
     def add_action(
         self,
