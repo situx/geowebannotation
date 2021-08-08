@@ -1,0 +1,17 @@
+{
+ "#de88e889-b002-4737-afc2-d6c5032db6a5": {
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "http://example.org/anno27",
+  "type": "Annotation",
+  "body": "http://example.org/road1",
+  "target": {
+    "source": "http://example.org/myfeaturecollection",
+    "selector": {
+      "type": "GeoSelector",
+      "targetFeature": "http://example.org/myfeaturecollection/myfeature",
+      "coordinateReferenceSystem": "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+      "value": "POLYGON ((-14.865577 35.7184346,-14.8554858 35.7166326,-14.8390875 35.7184346,-14.8335013 35.7146504,-14.8428717 35.7103256,-14.857468 35.7085236,-14.8630542 35.7135692,-14.865577 35.7184346))"
+    }
+  }
+ }
+}

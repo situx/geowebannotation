@@ -28,6 +28,17 @@ from qgis.core import QgsProject, Qgis
 
 # Initialize Qt resources from file resources.py
 from .resources import *
+import os.path
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "dependencies")))
+import requests
+import uuid
+import json
+import urllib.parse
+from rdflib import *
+from rdflib.plugins.sparql import prepareQuery
+from SPARQLWrapper import SPARQLWrapper, JSON, POST, GET
 # Import the code for the dialog
 from .geowebannotation_dialog import GeoWebAnnotationDialog
 from .geowebannotationtool import CircleMapTool
@@ -35,6 +46,7 @@ from .geowebannotationtool import RectangleMapTool
 from .geowebannotationtool import PolygonMapTool
 from .geowebannotationtool import PointMapTool
 from .geowebannotationtool import SelectMapTool
+from .loadgraphdialog import LoadGraphDialog
 import os.path
 
 
@@ -230,10 +242,106 @@ class GeoWebAnnotation:
                 action)
             self.iface.removeToolBarIcon(action)
 
+    def exportLayerAsTTL(self):
+        self.exportLayer(None,None,None,None,None,None,self.dlg.exportTripleStore_2.isChecked())
+        
+    def exportLayerAsJSONLD(self):
+        self.exportLayer(None,None,None,None,None,None,self.dlg.exportTripleStore_2.isChecked())
+
+    ## Creates the export layer dialog for exporting layers as TTL.
+    #  @param self The object pointer.
+    def exportLayer(self,urilist=None,classurilist=None,includelist=None,proptypelist=None,valuemappings=None,valuequeries=None,exportToTripleStore=False):
+        layers = QgsProject.instance().layerTreeRoot().children()
+        if self.enrichedExport:
+            selectedLayerIndex = self.dlg.chooseLayerInterlink.currentIndex()
+        else:
+            selectedLayerIndex = self.dlg.loadedLayers.currentIndex()
+        layer = layers[selectedLayerIndex].layer()
+        if exportToTripleStore:
+            ttlstring=self.layerToTTLString(layer,urilist,classurilist,includelist,proptypelist,valuemappings,valuequeries)
+            uploaddialog=UploadRDFDialog(ttlstring,self.triplestoreconf,self.dlg.comboBox.currentIndex())
+            uploaddialog.setMinimumSize(450, 250)
+            uploaddialog.setWindowTitle("Upload interlinked dataset to triple store ")
+            uploaddialog.exec_()
+        else:
+            filename, _filter = QFileDialog.getSaveFileName(
+                self.dlg, "Select   output file ","", "Linked Data (*.ttl *.n3 *.nt)",)
+            if filename=="":
+                return
+            ttlstring=self.layerToTTLString(layer,urilist,classurilist,includelist,proptypelist,valuemappings,valuequeries)
+            g=Graph()
+            g.parse(data=ttlstring, format="ttl")
+            splitted=filename.split(".")
+            exportNameSpace=""
+            exportSetClass=""
+            with open(filename, 'w') as output_file:
+                output_file.write(g.serialize(format=splitted[len(splitted)-1]).decode("utf-8"))
+                iface.messageBar().pushMessage("export layer successfully!", "OK", level=Qgis.Success)
+
+    def exportLayerAsGeoJSONLD(self):
+        context={
+    "geojson": "https://purl.org/geojson/vocab#",
+    "Feature": "geojson:Feature",
+    "FeatureCollection": "geojson:FeatureCollection",
+    "GeometryCollection": "geojson:GeometryCollection",
+    "LineString": "geojson:LineString",
+    "MultiLineString": "geojson:MultiLineString",
+    "MultiPoint": "geojson:MultiPoint",
+    "MultiPolygon": "geojson:MultiPolygon",
+    "Point": "geojson:Point",
+    "Polygon": "geojson:Polygon",
+    "bbox": {
+      "@container": "@list",
+      "@id": "geojson:bbox"
+    },
+    "coordinates": {
+      "@container": "@list",
+      "@id": "geojson:coordinates"
+    },
+    "features": {
+      "@container": "@set",
+      "@id": "geojson:features"
+    },
+    "geometry": "geojson:geometry",
+    "id": "@id",
+    "properties": "geojson:properties",
+    "type": "@type",
+    "description": "http://purl.org/dc/terms/description",
+    "title": "http://purl.org/dc/terms/title"
+  }
+        layer = layers[selectedLayerIndex].layer()
+        fieldnames = [field.name() for field in layer.fields()]
+        currentgeo={}
+        geos=[]
+        for f in layer.getFeatures():
+            geom = f.geometry()
+            currentgeo={'id':row[0],'geometry':json.loads(geom.asJson()),'properties':{}}
+            for prop in fieldnames:
+                if prop=="id":
+                    currentgeo["id"]=f[prop]
+                else:
+                    currentgeo["properties"][prop]=f[prop]
+            geos.append(currentgeo)
+        featurecollection={"@context":context, "type":"FeatureCollection", "@id":"http://example.com/collections/1", "features": geos }
+        return featurecollection
+
     def select_output_file(self):
         filename, _filter = QFileDialog.getSaveFileName(
             self.dlg, "Select   output file ","", '*.csv')
         self.dlg.lineEdit.setText(filename)
+        
+    def loadWebAnnotationLayer(self):
+        vlayer = QgsVectorLayer(json.dumps(geojson, sort_keys=True, indent=4),"unicorn_"+self.dlg.inp_label.text(),"ogr")
+        
+    ## 
+    #  @brief Creates a What To Enrich dialog with parameters given.
+    #  
+    #  @param self The object pointer
+    def buildLoadGraphDialog(self):	
+        self.searchTripleStoreDialog = LoadGraphDialog(None,self.dlg,self)	
+        self.searchTripleStoreDialog.setWindowTitle("Load Graph")	
+        self.searchTripleStoreDialog.exec_()
+
 
     def run(self):
         """Run method that performs all the real work"""
@@ -248,10 +356,13 @@ class GeoWebAnnotation:
         # Fetch the currently loaded layers
         layers = QgsProject.instance().layerTreeRoot().children()
         # Clear the contents of the comboBox from previous runs
-        self.dlg.comboBox.clear()
+        self.dlg.layerToAnnotateComboBox.clear()
         # Populate the comboBox with names of all the loaded layers
-        self.dlg.comboBox.addItems([layer.name() for layer in layers])
-
+        self.dlg.layerToAnnotateComboBox.addItems([layer.name() for layer in layers])
+        self.dlg.loadAnnotationLayerButton.clicked.connect(self.buildLoadGraphDialog)
+        self.dlg.saveAsTTLButton.clicked.connect(self.exportLayerAsTTL)
+        self.dlg.saveAsJSONLDButton.clicked.connect(self.exportLayerAsJSONLD)
+        self.dlg.saveAsGeoJSONLDButton.clicked.connect(self.exportLayerAsGeoJSONLD)
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -260,7 +371,7 @@ class GeoWebAnnotation:
         if result:
             filename = self.dlg.lineEdit.text()
             with open(filename, 'w') as output_file:
-                selectedLayerIndex = self.dlg.comboBox.currentIndex()
+                selectedLayerIndex = self.dlg.layerToAnnotateComboBox.currentIndex()
                 selectedLayer = layers[selectedLayerIndex].layer()
                 fieldnames = [field.name() for field in selectedLayer.fields()]
                 # write header

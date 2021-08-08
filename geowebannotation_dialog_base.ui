@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>717</width>
+    <height>318</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,46 +29,33 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QComboBox" name="layerToAnnotateComboBox">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>110</y>
+     <x>240</x>
+     <y>40</y>
      <width>191</width>
      <height>22</height>
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="selectLayerToAnnotate">
    <property name="geometry">
     <rect>
-     <x>56</x>
-     <y>110</y>
-     <width>91</width>
+     <x>20</x>
+     <y>40</y>
+     <width>141</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Select a layer</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>150</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Select Output File</string>
+    <string>Select a layer to annotate</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>550</x>
      <y>150</y>
      <width>113</width>
      <height>20</height>
@@ -78,7 +65,7 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>380</x>
      <y>150</y>
      <width>75</width>
      <height>23</height>
@@ -86,6 +73,120 @@
    </property>
    <property name="text">
     <string>...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select already existing annotation layer</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="selectAnnoationLayerComboBox">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>80</y>
+     <width>191</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>10</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Annotation Layer Configuration</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="loadAnnotationLayerButton">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>80</y>
+     <width>181</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load JSON-LD Annotation Layer</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveAsJSONLDButton">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>200</y>
+     <width>181</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save As JSON-LD</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveAsGeoJSONLDButton">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>200</y>
+     <width>181</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save As GeoJSON-LD</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>120</y>
+     <width>191</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save Annotation Layer Configuration</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="saveAnnotationsWithLayerBox">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>150</y>
+     <width>211</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save annotations and geometry layer</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveAsTTLButton">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>200</y>
+     <width>181</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save As TTL</string>
    </property>
   </widget>
  </widget>
