@@ -10,22 +10,18 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 class AnnotateDialog(QDialog,FORM_CLASS):
 	
     def __init__(self,selectedresources):
-        super(QDialog, self).__init__()
+        super(AnnotateDialog, self).__init__()
         self.setupUi(self)
-        msgBox=QMessageBox()
-        msgBox.setText("hello");
-        msgBox.exec();
-        model = QtGui.QStandardItemModel()
-        self.selectionListView.setModel(model)
-        msgBox=QMessageBox()
-        msgBox.setText(str(selectedresources));
-        msgBox.exec();
-        for i in selectedresources:
-            print(i)
-            msgBox=QMessageBox()
-            msgBox.setText(str(i));
-            msgBox.exec();
-            item = QtGui.QStandardItem(i)
-            model.appendRow(item)
-            
+        #msgBox=QMessageBox()
+        #msgBox.setText("hello");
+        #msgBox.exec();
+        #model = QtGui.QStandardItemModel()
+        #self.selectionListView.setModel(model)
+        #msgBox=QMessageBox()
+        #msgBox.setText(str(selectedresources));
+        #msgBox.exec();
+        #for i in selectedresources:
+        #    item = QtGui.QStandardItem(str(i))
+        #    model.appendRow(item)
+        self.show()
          

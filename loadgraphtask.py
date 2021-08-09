@@ -70,10 +70,9 @@ class LoadGraphTask(QgsTask):
         data = json.load(f)
         for key in data:
             if "@context" in data[key] and "body" in data[key] and "target" in data[key] and "selector" in data[key]["target"] and "type" in data[key]["target"] and data[key]["target"]["type"]=="GeoSelector" and data[key]["@context"]=="http://www.w3.org/ns/anno.jsonld":
-                
-                
+                print("loading json-ld")
         f.close()
-        vlayer = QgsVectorLayer(json.dumps(geojson, sort_keys=True, indent=4),"unicorn_"+self.dlg.inp_label.text(),"ogr")
+        #vlayer = QgsVectorLayer(json.dumps(geojson, sort_keys=True, indent=4),"unicorn_"+self.dlg.inp_label.text(),"ogr")
         return layer        
 
     def finished(self, result):

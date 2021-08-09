@@ -115,8 +115,8 @@ class PolygonMapTool(QgsMapTool):
                 msgBox.exec();
                 for lyr in QgsProject.instance().mapLayers().values():
                     destCrs = QgsCoordinateReferenceSystem(lyr.crs())
-                    tr = QgsCoordinateTransform(rbgeom.crs(), destCrs, QgsProject.instance())
-                    rbgeom.transform(tr)
+                    #tr = QgsCoordinateTransform(rbgeom.crs(), destCrs, QgsProject.instance())
+                    #rbgeom.transform(tr)
                     msgBox=QMessageBox()
                     msgBox.setText(str(rbgeom))
                     msgBox.exec();
