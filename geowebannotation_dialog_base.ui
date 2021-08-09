@@ -65,7 +65,7 @@
     <string>Select already existing annotation layer</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="selectAnnoationLayerComboBox">
+  <widget class="QComboBox" name="selectAnnotationLayerComboBox">
    <property name="geometry">
     <rect>
      <x>240</x>

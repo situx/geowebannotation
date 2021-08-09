@@ -54,6 +54,10 @@ class GeoWebAnnotation:
     """QGIS Plugin Implementation."""
 
     layers=None
+    
+    currentLayer=None
+    
+    exportNameSpace=None
 
     def __init__(self, iface):
         """Constructor.
@@ -245,20 +249,18 @@ class GeoWebAnnotation:
             self.iface.removeToolBarIcon(action)
 
     def exportLayerAsTTL(self):
-        self.exportLayer(None,None,None,None,None,None,self.dlg.exportTripleStore_2.isChecked())
+        self.exportLayer(None,None,None,None,None,None,False)
         
     def exportLayerAsJSONLD(self):
-        self.exportLayer(None,None,None,None,None,None,self.dlg.exportTripleStore_2.isChecked())
+        self.exportLayer(None,None,None,None,None,None,False)
 
     ## Creates the export layer dialog for exporting layers as TTL.
     #  @param self The object pointer.
     def exportLayer(self,urilist=None,classurilist=None,includelist=None,proptypelist=None,valuemappings=None,valuequeries=None,exportToTripleStore=False):
         layers = QgsProject.instance().layerTreeRoot().children()
-        if self.enrichedExport:
-            selectedLayerIndex = self.dlg.chooseLayerInterlink.currentIndex()
-        else:
-            selectedLayerIndex = self.dlg.loadedLayers.currentIndex()
-        layer = layers[selectedLayerIndex].layer()
+        selectedLayerIndex = self.dlg.selectAnnotationLayerComboBox.currentText()
+        layers = QgsProject.instance().mapLayersByName(selectedLayerIndex)
+        layer=layers[0]
         if exportToTripleStore:
             ttlstring=self.layerToTTLString(layer,urilist,classurilist,includelist,proptypelist,valuemappings,valuequeries)
             uploaddialog=UploadRDFDialog(ttlstring,self.triplestoreconf,self.dlg.comboBox.currentIndex())
@@ -447,13 +449,16 @@ class GeoWebAnnotation:
     "description": "http://purl.org/dc/terms/description",
     "title": "http://purl.org/dc/terms/title"
   }
-        layer = layers[selectedLayerIndex].layer()
+        layers = QgsProject.instance().layerTreeRoot().children()
+        selectedLayerIndex = self.dlg.selectAnnotationLayerComboBox.currentText()
+        layers = QgsProject.instance().mapLayersByName(selectedLayerIndex)
+        layer=layers[0]
         fieldnames = [field.name() for field in layer.fields()]
         currentgeo={}
         geos=[]
         for f in layer.getFeatures():
             geom = f.geometry()
-            currentgeo={'id':row[0],'geometry':json.loads(geom.asJson()),'properties':{}}
+            currentgeo={'id':'','geometry':json.loads(geom.asJson()),'properties':{}}
             for prop in fieldnames:
                 if prop=="id":
                     currentgeo["id"]=f[prop]
@@ -463,10 +468,7 @@ class GeoWebAnnotation:
         featurecollection={"@context":context, "type":"FeatureCollection", "@id":"http://example.com/collections/1", "features": geos }
         return featurecollection
 
-    def select_output_file(self):
-        filename, _filter = QFileDialog.getSaveFileName(
-            self.dlg, "Select   output file ","", '*.csv')
-        self.dlg.lineEdit.setText(filename)
+
         
     def loadWebAnnotationLayer(self):
         vlayer = QgsVectorLayer(json.dumps(geojson, sort_keys=True, indent=4),"unicorn_"+self.dlg.inp_label.text(),"ogr")
@@ -495,7 +497,16 @@ class GeoWebAnnotation:
         # Clear the contents of the comboBox from previous runs
         self.dlg.layerToAnnotateComboBox.clear()
         # Populate the comboBox with names of all the loaded layers
-        self.dlg.layerToAnnotateComboBox.addItems([layer.name() for layer in layers])
+        layerlist=[]
+        for layer in layers:
+            if not "webannotation" in layer.name():
+                layerlist.append(layer.name())
+        self.dlg.layerToAnnotateComboBox.addItems(layerlist)
+        annotationlayers=[]
+        for layer in layers:
+            if "webannotation" in layer.name():
+                annotationlayers.append(layer.name())
+        self.dlg.selectAnnotationLayerComboBox.addItems(annotationlayers)    
         self.dlg.loadAnnotationLayerButton.clicked.connect(self.buildLoadGraphDialog)
         self.dlg.saveAsTTLButton.clicked.connect(self.exportLayerAsTTL)
         self.dlg.saveAsJSONLDButton.clicked.connect(self.exportLayerAsJSONLD)
@@ -505,19 +516,3 @@ class GeoWebAnnotation:
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
-        if result:
-            filename = self.dlg.lineEdit.text()
-            with open(filename, 'w') as output_file:
-                selectedLayerIndex = self.dlg.layerToAnnotateComboBox.currentIndex()
-                selectedLayer = layers[selectedLayerIndex].layer()
-                fieldnames = [field.name() for field in selectedLayer.fields()]
-                # write header
-                line = ','.join(name for name in fieldnames) + '\n'
-                output_file.write(line)
-                # wirte feature attributes
-                for f in selectedLayer.getFeatures():
-                    line = ','.join(str(f[name]) for name in fieldnames) + '\n'
-                    output_file.write(line)
-            self.iface.messageBar().pushMessage(
-                "Success", "Output file written at " + filename,
-                level=Qgis.Success, duration=3)
