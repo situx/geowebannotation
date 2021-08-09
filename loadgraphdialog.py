@@ -64,7 +64,7 @@ class LoadGraphDialog(QtWidgets.QDialog, FORM_CLASS):
             progress = QProgressDialog("Loading Graph: "+fileNames[0], "Abort", 0, 0, self)
             progress.setWindowModality(Qt.WindowModal)
             progress.setCancelButton(None)
-            self.qtask=LoadGraphTask("Loading Graph: "+fileNames[0], fileNames[0],self,self.dlg,self.maindlg,self.triplestoreconf[0]["geoconceptquery"],self.triplestoreconf,progress)
+            self.qtask=LoadGraphTask("Loading Graph: "+fileNames[0], fileNames[0],self,self.dlg,progress)
             QgsApplication.taskManager().addTask(self.qtask)
 			
     def loadURI(self):

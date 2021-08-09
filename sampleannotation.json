@@ -18,7 +18,11 @@
   "@context": "http://www.w3.org/ns/anno.jsonld",
   "id": "http://example.org/anno27",
   "type": "Annotation",
-  "body": "http://example.org/road1",
+  "body": {
+    "type": "TextualBody",
+    "value": "This is my comment",
+    "format": "text/plain"
+  },
   "target": {
     "source": "http://example.org/myfeaturecollection",
     "selector": {
