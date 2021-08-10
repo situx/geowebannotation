@@ -419,6 +419,9 @@ class GeoWebAnnotation:
 
 
     def exportLayerAsGeoJSONLD(self):
+        filename, _filter = QFileDialog.getSaveFileName(self.dlg, "Select   output file ","", "GeoJSON-LD (*.json)",)
+        if filename=="":
+            return
         context={
     "geojson": "https://purl.org/geojson/vocab#",
     "Feature": "geojson:Feature",
@@ -466,7 +469,10 @@ class GeoWebAnnotation:
                     currentgeo["properties"][prop]=f[prop]
             geos.append(currentgeo)
         featurecollection={"@context":context, "type":"FeatureCollection", "@id":"http://example.com/collections/1", "features": geos }
-        return featurecollection
+        f = open(filename, "w")
+        f.write(json.dumps(featurecollection))
+        f.close()
+        return
 
 
         

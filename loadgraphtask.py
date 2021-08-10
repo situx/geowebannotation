@@ -64,6 +64,10 @@ class LoadGraphTask(QgsTask):
             if "@context" in data[key] and "body" in data[key] and "target" in data[key] and "selector" in data[key]["target"] and "type" in data[key]["target"]["selector"] and data[key]["target"]["selector"]["type"]=="GeoSelector" and data[key]["@context"]=="http://www.w3.org/ns/anno.jsonld":
                 geom=QgsGeometry.fromWkt(str(data[key]["target"]["selector"]["value"]))
                 feat={"type":"Feature","properties":{},"geometry":json.loads(geom.asJson())}
+                if "id" in data[key]:
+                    feat["id"]=data[key]["id"]
+                else:
+                    feat["id"]=key
                 feat["properties"]["target"]=data[key]["target"]["source"]
                 if "targetFeature" in data[key]["target"]["selector"]:
                     feat["properties"]["targetFeature"]=data[key]["target"]["selector"]["targetFeature"]
