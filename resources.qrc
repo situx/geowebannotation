@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/save_attributes" >
+    <qresource prefix="/plugins/geowebannotation" >
         <file>resources/icons/icon.png</file>
     </qresource>
 </RCC>

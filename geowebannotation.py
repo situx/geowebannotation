@@ -30,6 +30,7 @@ from qgis.core import QgsProject, Qgis
 import os.path
 import sys
 
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "dependencies")))
 import uuid
 import re
@@ -39,6 +40,7 @@ from rdflib import *
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 # Import the code for the dialog
 from .dialogs.geowebannotation_dialog import GeoWebAnnotationDialog
+from .util.uiutils import UIUtils
 from .util.geowebannotationtool import CircleMapTool
 from .util.geowebannotationtool import RectangleMapTool
 from .util.geowebannotationtool import PolygonMapTool
@@ -110,7 +112,7 @@ class GeoWebAnnotation:
 
     def add_action(
         self,
-        icon_path,
+        icon,
         text,
         callback,
         enabled_flag=True,
@@ -119,7 +121,6 @@ class GeoWebAnnotation:
         status_tip=None,
         whats_this=None,
         parent=None):
-        icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
@@ -146,33 +147,33 @@ class GeoWebAnnotation:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/save_attributes/icon.png'
+        icon_path = ':/plugins/geowebannotation/icon.png'
         self.add_action(
-            icon_path,
+            QIcon(icon_path),
             text=self.tr(u'GeoWebAnnotation'),
             callback=self.run,
             parent=self.iface.mainWindow())
 
         self.add_action(
-            icon_path,
+            UIUtils.polygonannoicon,
             text=self.tr(u'PolygonMapTool'),
             callback=self.choose_polygon_mapping_tool,
             parent=self.iface.mainWindow())
 
         self.add_action(
-            icon_path,
+            UIUtils.pointannoicon,
             text=self.tr(u'PointMapTool'),
             callback=self.choose_point_mapping_tool,
             parent=self.iface.mainWindow())
 
         self.add_action(
-            icon_path,
+            UIUtils.selectannoicon,
             text=self.tr(u'SelectMapTool'),
             callback=self.choose_select_mapping_tool,
             parent=self.iface.mainWindow())
         
         self.add_action(
-            icon_path,
+            UIUtils.circleannoicon,
             text=self.tr(u'CircleMapTool'),
             callback=self.choose_circle_mapping_tool,
             parent=self.iface.mainWindow())
@@ -188,6 +189,14 @@ class GeoWebAnnotation:
                 self.tr(u'&GeoWebAnnotation'),
                 action)
             self.iface.removeToolBarIcon(action)
+
+    def saveLayer(self):
+        if self.dlg.exportFormatComboBox.currentText()=="GeoJSON-LD":
+            self.exportLayerAsGeoJSONLD()
+        elif self.dlg.exportFormatComboBox.currentText()=="JSON-LD":
+            self.exportLayer(None, None, None, None, None, None, False)
+        else:
+            self.exportLayer(None, None, None, None, None, None, False)
 
     def exportLayerAsTTL(self):
         self.exportLayer(None,None,None,None,None,None,False)
@@ -455,9 +464,7 @@ class GeoWebAnnotation:
                 annotationlayers.append(layer.name())
         self.dlg.selectAnnotationLayerComboBox.addItems(annotationlayers)    
         self.dlg.loadAnnotationLayerButton.clicked.connect(self.buildLoadGraphDialog)
-        self.dlg.saveAsTTLButton.clicked.connect(self.exportLayerAsTTL)
-        self.dlg.saveAsJSONLDButton.clicked.connect(self.exportLayerAsJSONLD)
-        self.dlg.saveAsGeoJSONLDButton.clicked.connect(self.exportLayerAsGeoJSONLD)
+        self.dlg.saveLayerButton.clicked.connect(self.saveLayer)
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
