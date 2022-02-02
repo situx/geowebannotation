@@ -6,7 +6,7 @@ from qgis.PyQt import uic
 import os.path
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'annotationdialog.ui'))
+    os.path.dirname(__file__), 'ui/annotationdialog.ui'))
 class AnnotateDialog(QDialog,FORM_CLASS):
 	
     def __init__(self,selectedresources):

@@ -1,19 +1,16 @@
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.PyQt.QtWidgets import QProgressDialog,QFileDialog
-from qgis.PyQt import QtCore
 from qgis.core import QgsApplication
 from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtCore import QSettings
 from qgis.PyQt.QtCore import QRegExp
 from qgis.PyQt.QtGui import QRegExpValidator,QValidator
-from .loadgraphtask import LoadGraphTask
+from ..tasks.loadgraphtask import LoadGraphTask
 import os.path
-import sys
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'loadgraphdialog.ui'))
+    os.path.dirname(__file__), 'ui/loadgraphdialog.ui'))
 
 ## 
 #  @brief The main dialog window of the SPARQLUnicorn QGIS Plugin.

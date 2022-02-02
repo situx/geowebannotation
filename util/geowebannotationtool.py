@@ -1,10 +1,13 @@
-from qgis.gui import QgsMapToolEmitPoint, QgsMapCanvas, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature
-from qgis.PyQt.QtCore import pyqtSignal,QUrl,Qt
-from qgis.PyQt.QtGui import QColor
-from qgis.PyQt.QtWidgets import QInputDialog, QMessageBox
-from qgis.core import QgsProject, Qgis,QgsRasterLayer,QgsPointXY, QgsRectangle, QgsDistanceArea,QgsWkbTypes,QgsCoordinateReferenceSystem, QgsCoordinateTransform
+from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature
+from qgis.PyQt.QtCore import pyqtSignal, Qt
+from qgis.PyQt.QtGui import QColor, QKeySequence
+from qgis.PyQt.QtWidgets import QMessageBox
+from qgis.core import QgsProject, QgsPointXY, QgsRectangle, QgsWkbTypes,QgsCoordinateReferenceSystem, QgsCoordinateTransform
 from math import sqrt,pi,cos,sin
-from .webannotatedialog import AnnotateDialog
+from qgis.utils import iface
+from qgis.core import QgsProject, QgsGeometry, QgsVectorLayer
+from ..dialogs.webannotatedialog import AnnotateDialog
+
 
 class CircleMapTool(QgsMapTool):
     '''Outil de sélection par cercle, tiré de selectPlusFr'''
@@ -21,7 +24,6 @@ class CircleMapTool(QgsMapTool):
         self.segments = segments
         self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
         self.rb.setColor(QColor(255, 0, 0, 100))
-        return None
 
     def canvasPressEvent(self, e):
         if not e.button() == Qt.LeftButton:
@@ -91,7 +93,6 @@ class PolygonMapTool(QgsMapTool):
         self.status = 0
         self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
         self.rb.setColor(QColor(255, 0, 0, 100))
-        return None
 
     def keyPressEvent(self, e):
         if e.matches(QKeySequence.Undo):
@@ -112,22 +113,33 @@ class PolygonMapTool(QgsMapTool):
                 rbgeom=self.rb.asGeometry()
                 msgBox=QMessageBox()
                 msgBox.setText(str(rbgeom))
-                msgBox.exec();
-                for lyr in QgsProject.instance().mapLayers().values():
+                msgBox.exec()
+                layer = iface.activeLayer()
+                for lyr in iface.layerTreeView().selectedLayers():
                     destCrs = QgsCoordinateReferenceSystem(lyr.crs())
-                    #tr = QgsCoordinateTransform(rbgeom.crs(), destCrs, QgsProject.instance())
-                    #rbgeom.transform(tr)
+                    #msgBox=QMessageBox()
+                    #msgBox.setText(str(lyr.crs())+" "+str(layer.crs()))
+                    #msgBox.exec();
+                    tr = QgsCoordinateTransform(layer.crs(), QgsProject.instance().crs(), QgsProject.instance())
+                    rbgeom.transform(tr)
+                    selfeat=[]
+                    for feat in lyr.getFeatures():
+                        geom = feat.geometry()
+                        #msgBox=QMessageBox()
+                        #msgBox.setText(str(rbgeom)+" "+str(geom))
+                        #msgBox.exec();
+                        if rbgeom.intersects(geom):
+                            msgBox=QMessageBox()
+                            msgBox.setText(str("intersects"))
+                            msgBox.exec()
+                            instancelist.append(feat)
+                            selfeat.append(feat.id())
                     msgBox=QMessageBox()
-                    msgBox.setText(str(rbgeom))
-                    msgBox.exec();
-                    try:
-                        for feat in lyr.getFeatures():
-                            geom = feature.geometry()
-                            if rbgeom.contains(geom):
-                                instancelist.add(feat)
-                    except:
-                        print("No feature vector layer")
-                AnnotateDialog(instancelist)
+                    msgBox.setText(str(selfeat))
+                    msgBox.exec()
+                    #lyr.setSelectedFeatures(selfeat)
+                annod=AnnotateDialog(instancelist)
+                annod.exec()
             else:
                 self.reset()
         return None
@@ -254,6 +266,10 @@ class SelectMapTool(QgsMapToolIdentifyFeature):
     def canvasPressEvent(self, event):
         found_features = self.identify(event.x(), event.y(), [self.layer], QgsMapToolIdentify.TopDownAll)
         self.layer.selectByIds([f.mFeature.id() for f in found_features], QgsVectorLayer.AddToSelection)
+        msgBox=QMessageBox()
+        msgBox.setWindowTitle("Test!")
+        msgBox.setText(str(found_features))
+        msgBox.exec()
         
     def deactivate(self):
         self.layer.removeSelection()        
@@ -271,7 +287,6 @@ class PointMapTool(QgsMapTool):
         self.iface = iface
         self.status = 0
         self.point=None
-        return None
 
     def keyPressEvent(self, e):
         print("test")
@@ -289,8 +304,8 @@ class PointMapTool(QgsMapTool):
 
     def reset(self):
         self.status = 0
-        self.rb.reset(True)
+        #self.rb.reset(True)
 
     def deactivate(self):
-        self.rb.reset(True)
+        #self.rb.reset(True)
         QgsMapTool.deactivate(self)
