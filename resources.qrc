@@ -3,5 +3,7 @@
     <file>resources/icons/circleanno.png</file>
     <file>resources/icons/pointanno.png</file>
     <file>resources/icons/polygonanno.png</file>
+    <file>resources/icons/selectanno.png</file>
+    <file>resources/icons/icon.png</file>
   </qresource>
 </RCC>

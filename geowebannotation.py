@@ -24,6 +24,7 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
+from qgis._core import QgsWkbTypes
 from qgis.core import QgsProject, Qgis
 
 # Initialize Qt resources from file resources.py
@@ -147,7 +148,7 @@ class GeoWebAnnotation:
 
         icon_path = ':/plugins/geowebannotation/icon.png'
         self.add_action(
-            QIcon(icon_path),
+            UIUtils.geowebannotationicon,
             text=self.tr(u'GeoWebAnnotation'),
             callback=self.run,
             parent=self.iface.mainWindow())
@@ -211,10 +212,6 @@ class GeoWebAnnotation:
         layer=layers[0]
         if exportToTripleStore:
             ttlstring=self.layerToTTLString(layer,urilist,classurilist,includelist,proptypelist,valuemappings,valuequeries)
-            uploaddialog=UploadRDFDialog(ttlstring,self.triplestoreconf,self.dlg.comboBox.currentIndex())
-            uploaddialog.setMinimumSize(450, 250)
-            uploaddialog.setWindowTitle("Upload interlinked dataset to triple store ")
-            uploaddialog.exec_()
         else:
             filename, _filter = QFileDialog.getSaveFileName(
                 self.dlg, "Select   output file ","", "Linked Data (*.ttl *.n3 *.nt)",)
@@ -228,7 +225,7 @@ class GeoWebAnnotation:
             exportSetClass=""
             with open(filename, 'w') as output_file:
                 output_file.write(g.serialize(format=splitted[len(splitted)-1]).decode("utf-8"))
-                iface.messageBar().pushMessage("export layer successfully!", "OK", level=Qgis.Success)
+                #iface.messageBar().pushMessage("export layer successfully!", "OK", level=Qgis.Success)
 
     ## Converts a QGIS layer to TTL with or withour a given column mapping.
     #  @param self The object pointer. 
@@ -319,7 +316,7 @@ class GeoWebAnnotation:
                 elif valuequeries!=None and propp in valuequeries:
                     ttlstring+=""
                     sparql = SPARQLWrapper(valuequeries[propp][1], agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11")
-                    sparql.setQuery("".join(self.prefixes[endpointIndex]) + valuequeries[propp][0].replace("%%"+propp+"%%","\""+str(f[propp])+"\""))
+                    sparql.setQuery(valuequeries[propp][0].replace("%%"+propp+"%%","\""+str(f[propp])+"\""))
                     sparql.setMethod(POST)
                     sparql.setReturnFormat(JSON)
                     results = sparql.query().convert()
@@ -425,7 +422,8 @@ class GeoWebAnnotation:
 
         
     def loadWebAnnotationLayer(self):
-        vlayer = QgsVectorLayer(json.dumps(geojson, sort_keys=True, indent=4),"unicorn_"+self.dlg.inp_label.text(),"ogr")
+        print("load layer")
+        #vlayer = QgsVectorLayer(json.dumps(geojson, sort_keys=True, indent=4),"unicorn_"+self.dlg.inp_label.text(),"ogr")
         
     ## 
     #  @brief Creates a What To Enrich dialog with parameters given.

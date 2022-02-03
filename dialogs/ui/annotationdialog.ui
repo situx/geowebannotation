@@ -11,189 +11,101 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Annotation Dialog</string>
   </property>
-  <widget class="QListView" name="annotationListView">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>40</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QListView" name="selectionListView">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>40</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="applyButton">
-   <property name="geometry">
-    <rect>
-     <x>630</x>
-     <y>550</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Apply</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="selectedResourcesLabel">
-   <property name="geometry">
-    <rect>
-     <x>110</x>
-     <y>20</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Selected resources</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="annotationsToAddLabel">
-   <property name="geometry">
-    <rect>
-     <x>560</x>
-     <y>20</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Annotations to add</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="relationToAddLineEdit">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>330</y>
-     <width>113</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="relationToAddLabel">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>330</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Relation to add</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="valueToAddLabel">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>370</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Value to add</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="valueToAddLineEdit">
-   <property name="geometry">
-    <rect>
-     <x>170</x>
-     <y>370</y>
-     <width>113</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="tripleStoreCBox">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>290</y>
-     <width>151</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLabel" name="tripleStoreLabel">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>290</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Triple Store:</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="annotationTypeCBox">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>250</y>
-     <width>151</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>TextAnnotation</string>
-    </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0" colspan="3">
+    <widget class="QLabel" name="selectedResourcesLabel">
+     <property name="text">
+      <string>Selected resources</string>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>ExternalResource</string>
-    </property>
+   <item row="0" column="3">
+    <widget class="QLabel" name="annotationsToAddLabel">
+     <property name="text">
+      <string>Annotations to add</string>
+     </property>
+    </widget>
    </item>
-   <item>
-    <property name="text">
-     <string>ExternalResourceSegment</string>
-    </property>
+   <item row="1" column="0" colspan="3">
+    <widget class="QListView" name="selectionListView"/>
    </item>
-   <item>
-    <property name="text">
-     <string>Semantic Web</string>
-    </property>
+   <item row="1" column="3">
+    <widget class="QListView" name="annotationListView"/>
    </item>
-  </widget>
-  <widget class="QLabel" name="annotationTypeLabel">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>250</y>
-     <width>101</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Annotation Type:</string>
-   </property>
-  </widget>
-  <widget class="QPlainTextEdit" name="textAnnotationEdit">
-   <property name="geometry">
-    <rect>
-     <x>480</x>
-     <y>280</y>
-     <width>251</width>
-     <height>121</height>
-    </rect>
-   </property>
-  </widget>
+   <item row="2" column="0">
+    <widget class="QLabel" name="annotationTypeLabel">
+     <property name="text">
+      <string>Annotation Type:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QComboBox" name="annotationTypeCBox">
+     <item>
+      <property name="text">
+       <string>TextAnnotation</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ExternalResource</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ExternalResourceSegment</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Semantic Web</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="tripleStoreLabel">
+     <property name="text">
+      <string>Triple Store:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QComboBox" name="tripleStoreCBox"/>
+   </item>
+   <item row="3" column="3" rowspan="3">
+    <widget class="QPlainTextEdit" name="textAnnotationEdit"/>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QLabel" name="relationToAddLabel">
+     <property name="text">
+      <string>Relation to add</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLineEdit" name="relationToAddLineEdit"/>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="QLabel" name="valueToAddLabel">
+     <property name="text">
+      <string>Value to add</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2">
+    <widget class="QLineEdit" name="valueToAddLineEdit"/>
+   </item>
+   <item row="6" column="3">
+    <widget class="QPushButton" name="applyButton">
+     <property name="text">
+      <string>Apply</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

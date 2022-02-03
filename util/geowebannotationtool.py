@@ -1,3 +1,4 @@
+from qgis._gui import QgsMapToolIdentify
 from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature
 from qgis.PyQt.QtCore import pyqtSignal, Qt
 from qgis.PyQt.QtGui import QColor, QKeySequence
