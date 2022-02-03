@@ -14,94 +14,51 @@
    <string>Annotation Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="3">
+   <item row="0" column="2">
+    <widget class="QLabel" name="annotationsToAddLabel">
+     <property name="text">
+      <string>Added Annotations</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QListView" name="selectionListView"/>
+   </item>
+   <item row="3" column="2">
+    <widget class="QPushButton" name="applyButton">
+     <property name="text">
+      <string>Apply</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QListView" name="annotationListView"/>
+   </item>
+   <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="selectedResourcesLabel">
      <property name="text">
       <string>Selected resources</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QLabel" name="annotationsToAddLabel">
+   <item row="2" column="2">
+    <widget class="QPushButton" name="addAnnotation">
      <property name="text">
-      <string>Annotations to add</string>
+      <string>Add Annotation</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="3">
-    <widget class="QListView" name="selectionListView"/>
-   </item>
-   <item row="1" column="3">
-    <widget class="QListView" name="annotationListView"/>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="editAnnotation">
+     <property name="text">
+      <string>Edit Annotation</string>
+     </property>
+    </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="annotationTypeLabel">
+    <widget class="QPushButton" name="removeAnnotation">
      <property name="text">
-      <string>Annotation Type:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QComboBox" name="annotationTypeCBox">
-     <item>
-      <property name="text">
-       <string>TextAnnotation</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>ExternalResource</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>ExternalResourceSegment</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Semantic Web</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="tripleStoreLabel">
-     <property name="text">
-      <string>Triple Store:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" colspan="2">
-    <widget class="QComboBox" name="tripleStoreCBox"/>
-   </item>
-   <item row="3" column="3" rowspan="3">
-    <widget class="QPlainTextEdit" name="textAnnotationEdit"/>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="relationToAddLabel">
-     <property name="text">
-      <string>Relation to add</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QLineEdit" name="relationToAddLineEdit"/>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <widget class="QLabel" name="valueToAddLabel">
-     <property name="text">
-      <string>Value to add</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="2">
-    <widget class="QLineEdit" name="valueToAddLineEdit"/>
-   </item>
-   <item row="6" column="3">
-    <widget class="QPushButton" name="applyButton">
-     <property name="text">
-      <string>Apply</string>
+      <string>Remove Annotation</string>
      </property>
     </widget>
    </item>
