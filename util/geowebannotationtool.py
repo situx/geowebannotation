@@ -8,10 +8,12 @@ from math import sqrt,pi,cos,sin
 from qgis.utils import iface
 from qgis.core import QgsProject, QgsGeometry, QgsVectorLayer
 from ..dialogs.webannotatedialog import AnnotateDialog
+from qgis.core import Qgis,QgsTask, QgsMessageLog
 
+
+MESSAGE_CATEGORY = 'GeoWebAnnotation'
 
 class CircleMapTool(QgsMapTool):
-    '''Outil de sélection par cercle, tiré de selectPlusFr'''
 
     selectionDone = pyqtSignal()
     move = pyqtSignal()
@@ -44,7 +46,6 @@ class CircleMapTool(QgsMapTool):
         self.move.emit()
 
     def canvasReleaseEvent(self, e):
-        '''La sélection est faîte'''
         if not e.button() == Qt.LeftButton:
             return None
         self.status = 0
@@ -71,7 +72,6 @@ class CircleMapTool(QgsMapTool):
         QgsMapTool.deactivate(self)
 		
     def rbcircle(self,rb, center, edgePoint, N):
-        '''Fonction qui affiche une rubberband sous forme de cercle'''
         r = sqrt(center.sqrDist(edgePoint))
         self.rb.reset(QgsWkbTypes.PolygonGeometry)
         for itheta in range(N + 1):
@@ -81,7 +81,6 @@ class CircleMapTool(QgsMapTool):
         return
 		
 class PolygonMapTool(QgsMapTool):
-    '''Outil de sélection par polygone, tiré de selectPlusFr'''
 
     selectionDone = pyqtSignal()
     move = pyqtSignal()
@@ -165,7 +164,7 @@ class RectangleMapTool(QgsMapToolEmitPoint):
 
     rectangleCreated = pyqtSignal()
     deactivated = pyqtSignal()
-	
+
     point1=""
     point2=""
     point3=""
@@ -175,11 +174,10 @@ class RectangleMapTool(QgsMapToolEmitPoint):
     def __init__(self, canvas):
         self.canvas = canvas.mapCanvas()
         QgsMapToolEmitPoint.__init__(self, self.canvas)
-
         self.rubberBand = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
         self.rubberBand.setColor(QColor(255, 0, 0, 100))
         self.rubberBand.setWidth(2)
-
+        QgsMessageLog.logMessage("Initialized rectangle map tool", MESSAGE_CATEGORY, Qgis.Info)
         self.reset()
 
     def reset(self):
@@ -191,7 +189,7 @@ class RectangleMapTool(QgsMapToolEmitPoint):
         self.startPoint = self.toMapCoordinates(e.pos())
         self.endPoint = self.startPoint
         self.isEmittingPoint = True
-
+        QgsMessageLog.logMessage((self.startPoint+" "+self.endPoint), MESSAGE_CATEGORY, Qgis.Info)
         self.showRect(self.startPoint, self.endPoint)
 
     def canvasReleaseEvent(self, e):
@@ -207,6 +205,7 @@ class RectangleMapTool(QgsMapToolEmitPoint):
 
     def showRect(self, startPoint, endPoint):
         self.rubberBand.reset(QgsWkbTypes.PolygonGeometry)
+        QgsMessageLog.logMessage("Show rect ", MESSAGE_CATEGORY, Qgis.Info)
         if startPoint.x() == endPoint.x() or startPoint.y() == endPoint.y():
             return
 
@@ -257,26 +256,34 @@ class SelectMapTool(QgsMapToolIdentifyFeature):
         self.layer = self.iface.activeLayer()
         QgsMapToolIdentifyFeature.__init__(self, self.canvas, self.layer)
         self.iface.currentLayerChanged.connect(self.active_changed)
+        QgsMessageLog.logMessage("Initialized selection map tool!!! ", MESSAGE_CATEGORY, Qgis.Info)
+        QgsMessageLog.logMessage(str(self.layer.name()), MESSAGE_CATEGORY, Qgis.Info)
         
     def active_changed(self, layer):
+        QgsMessageLog.logMessage("Active selection has changed!!! ", MESSAGE_CATEGORY, Qgis.Info)
         self.layer.removeSelection()
         if isinstance(layer, QgsVectorLayer) and layer.isSpatial():
             self.layer = layer
             self.setLayer(self.layer)
             
     def canvasPressEvent(self, event):
+        QgsMessageLog.logMessage("Found features " + str(event.x())+" "+str(event.y()), MESSAGE_CATEGORY, Qgis.Info)
         found_features = self.identify(event.x(), event.y(), [self.layer], QgsMapToolIdentify.TopDownAll)
+        QgsMessageLog.logMessage("Found features "+str(found_features), MESSAGE_CATEGORY, Qgis.Info)
         self.layer.selectByIds([f.mFeature.id() for f in found_features], QgsVectorLayer.AddToSelection)
-        msgBox=QMessageBox()
-        msgBox.setWindowTitle("Test!")
-        msgBox.setText(str(found_features))
-        msgBox.exec()
+        QgsMessageLog.logMessage("Canvas Pressed Event!!! ", MESSAGE_CATEGORY, Qgis.Info)
+
+    def canvasReleaseEvent(self, e):
+        self.status = 0
+        self.point = self.toMapCoordinates(e.pos())
+        QgsMessageLog.logMessage(str(e.pos())+" - "+str(self.point), MESSAGE_CATEGORY, Qgis.Info)
+        self.selectionDone.emit()
         
     def deactivate(self):
         self.layer.removeSelection()        
-        
-class PointMapTool(QgsMapTool):
-    '''Outil de sélection par polygone, tiré de selectPlusFr'''
+
+
+class LineMapTool(QgsMapTool):
 
     selectionDone = pyqtSignal()
     move = pyqtSignal()
@@ -288,25 +295,59 @@ class PointMapTool(QgsMapTool):
         self.iface = iface
         self.status = 0
         self.point=None
-
-    def keyPressEvent(self, e):
-        print("test")
+        self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.LineGeometry)
+        self.rb.setColor(QColor(255, 0, 0, 100))
+        self.rb.setWidth(3)
 
     def canvasPressEvent(self, e):
+        QgsMessageLog.logMessage("Canvas Released Event!!! ", MESSAGE_CATEGORY, Qgis.Info)
         if e.button() == Qt.LeftButton:
             self.point=self.toMapCoordinates(e.pos())
+            self.rb.addPoint(self.point)
+            QgsMessageLog.logMessage("Selected point: " + str(self.point), MESSAGE_CATEGORY, Qgis.Info)
         else:
             self.selectionDone.emit()
-        return None
 
     def canvasMoveEvent(self, e):
+        if self.rb.numberOfVertices() > 0 and self.status == 1:
+            self.rb.removeLastPoint(0)
+            self.rb.addPoint(self.toMapCoordinates(e.pos()))
         self.move.emit()
-        return None
 
     def reset(self):
         self.status = 0
-        #self.rb.reset(True)
+        self.rb.reset(QgsWkbTypes.LineGeometry)
 
     def deactivate(self):
-        #self.rb.reset(True)
+        self.rb.reset(QgsWkbTypes.LineGeometry)
+        QgsMapTool.deactivate(self)
+
+class PointMapTool(QgsMapTool):
+
+    selectionDone = pyqtSignal()
+    move = pyqtSignal()
+
+    def __init__(self, iface):
+        canvas = iface.mapCanvas()
+        QgsMapTool.__init__(self, canvas)
+        self.canvas = canvas
+        self.iface = iface
+        self.point=None
+        self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PointGeometry)
+        self.rb.setColor(QColor(255, 0, 0, 100))
+        self.rb.setWidth(3)
+
+    def canvasReleaseEvent(self, e):
+        QgsMessageLog.logMessage("Canvas Released Event!!! ", MESSAGE_CATEGORY, Qgis.Info)
+        if e.button() == Qt.LeftButton:
+            self.point=self.toMapCoordinates(e.pos())
+            self.rb.addPoint(self.point)
+            QgsMessageLog.logMessage("Selected point: " + str(self.point), MESSAGE_CATEGORY, Qgis.Info)
+            self.selectionDone.emit()
+
+    def reset(self):
+        self.rb.reset(QgsWkbTypes.PointGeometry)
+
+    def deactivate(self):
+        self.rb.reset(QgsWkbTypes.PointGeometry)
         QgsMapTool.deactivate(self)

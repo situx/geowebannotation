@@ -22,7 +22,6 @@
  ***************************************************************************/
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
-from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis._core import QgsWkbTypes
 from qgis.core import QgsProject, Qgis
@@ -41,13 +40,15 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST
 # Import the code for the dialog
 from .util.uiutils import UIUtils
 from .dialogs.geowebannotation_dialog import GeoWebAnnotationDialog
-from .util.geowebannotationtool import CircleMapTool
+from .util.geowebannotationtool import CircleMapTool, LineMapTool
 from .util.geowebannotationtool import RectangleMapTool
 from .util.geowebannotationtool import PolygonMapTool
 from .util.geowebannotationtool import PointMapTool
 from .util.geowebannotationtool import SelectMapTool
 from .dialogs.loadgraphdialog import LoadGraphDialog
+from qgis.core import Qgis,QgsTask, QgsMessageLog
 
+MESSAGE_CATEGORY = 'GeoWebAnnotation'
 
 class GeoWebAnnotation:
     """QGIS Plugin Implementation."""
@@ -89,25 +90,34 @@ class GeoWebAnnotation:
 
 
     def create_annotation_layer(self,layername):
-        print("Create annotation layer")
+        QgsMessageLog.logMessage("Create annotation layer", MESSAGE_CATEGORY, Qgis.Info)
           
     def export_annotation_layer(self,layername):
-        print("Export annotation layer")
+        QgsMessageLog.logMessage("Export annotation layer", MESSAGE_CATEGORY, Qgis.Info)
 
     def choose_point_mapping_tool(self):
+        QgsMessageLog.logMessage("Selected point mapping tool", MESSAGE_CATEGORY, Qgis.Info)
         self.iface.mapCanvas().setMapTool( PointMapTool(self.iface) )
 
+    def choose_line_mapping_tool(self):
+        QgsMessageLog.logMessage("Selected line mapping tool", MESSAGE_CATEGORY, Qgis.Info)
+        self.iface.mapCanvas().setMapTool( LineMapTool(self.iface) )
+
     def choose_polygon_mapping_tool(self):
+        QgsMessageLog.logMessage("Selected polygon mapping tool", MESSAGE_CATEGORY, Qgis.Info)
         self.iface.mapCanvas().setMapTool( PolygonMapTool(self.iface) )
 
     def choose_circle_mapping_tool(self):
+        QgsMessageLog.logMessage("Selected circle mapping tool", MESSAGE_CATEGORY, Qgis.Info)
         self.iface.mapCanvas().setMapTool( CircleMapTool(self.iface,1) )
 
     def choose_rectangle_mapping_tool(self):
+        QgsMessageLog.logMessage("Selected rectangle mapping tool", MESSAGE_CATEGORY, Qgis.Info)
         self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface) )
 
     def choose_select_mapping_tool(self):
-        self.iface.mapCanvas().setMapTool( SelectMapTool(self.iface) )
+        QgsMessageLog.logMessage("Selected select mapping tool", MESSAGE_CATEGORY, Qgis.Info)
+        self.iface.mapCanvas().setMapTool(SelectMapTool(self.iface) )
 
     def add_action(
         self,
@@ -144,9 +154,6 @@ class GeoWebAnnotation:
         return action
 
     def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        icon_path = ':/plugins/geowebannotation/icon.png'
         self.add_action(
             UIUtils.geowebannotationicon,
             text=self.tr(u'GeoWebAnnotation'),
@@ -160,9 +167,21 @@ class GeoWebAnnotation:
             parent=self.iface.mainWindow())
 
         self.add_action(
+            UIUtils.lineannoicon,
+            text=self.tr(u'LineMapTool'),
+            callback=self.choose_line_mapping_tool,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
             UIUtils.pointannoicon,
             text=self.tr(u'PointMapTool'),
             callback=self.choose_point_mapping_tool,
+            parent=self.iface.mainWindow())
+
+        self.add_action(
+            UIUtils.rectangleannoicon,
+            text=self.tr(u'RectangleMapTool'),
+            callback=self.choose_rectangle_mapping_tool,
             parent=self.iface.mainWindow())
 
         self.add_action(
