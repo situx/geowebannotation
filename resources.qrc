@@ -1,5 +1,7 @@
 <RCC>
-    <qresource prefix="/plugins/geowebannotation" >
-        <file>resources/icons/icon.png</file>
-    </qresource>
+  <qresource prefix="icons">
+    <file>resources/icons/circleanno.png</file>
+    <file>resources/icons/pointanno.png</file>
+    <file>resources/icons/polygonanno.png</file>
+  </qresource>
 </RCC>

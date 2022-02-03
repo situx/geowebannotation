@@ -29,8 +29,7 @@ from qgis.core import QgsProject, Qgis
 # Initialize Qt resources from file resources.py
 import os.path
 import sys
-
-
+from .resources import *
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "dependencies")))
 import uuid
 import re
@@ -39,15 +38,14 @@ import urllib.parse
 from rdflib import *
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 # Import the code for the dialog
-from .dialogs.geowebannotation_dialog import GeoWebAnnotationDialog
 from .util.uiutils import UIUtils
+from .dialogs.geowebannotation_dialog import GeoWebAnnotationDialog
 from .util.geowebannotationtool import CircleMapTool
 from .util.geowebannotationtool import RectangleMapTool
 from .util.geowebannotationtool import PolygonMapTool
 from .util.geowebannotationtool import PointMapTool
 from .util.geowebannotationtool import SelectMapTool
 from .dialogs.loadgraphdialog import LoadGraphDialog
-import os.path
 
 
 class GeoWebAnnotation:
