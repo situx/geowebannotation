@@ -25,6 +25,8 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis._core import QgsWkbTypes
 from qgis.core import QgsProject, Qgis
+from qgis.PyQt.QtGui import QColor
+from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature, QgsHighlight
 
 # Initialize Qt resources from file resources.py
 import os.path
@@ -113,11 +115,23 @@ class GeoWebAnnotation:
 
     def choose_rectangle_mapping_tool(self):
         QgsMessageLog.logMessage("Selected rectangle mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface) )
+        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface.mapCanvas()) )
 
     def choose_select_mapping_tool(self):
         QgsMessageLog.logMessage("Selected select mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool(SelectMapTool(self.iface) )
+        idtool=QgsMapToolIdentifyFeature(self.iface.mapCanvas())
+        idtool.setLayer(self.iface.activeLayer())
+        QgsMessageLog.logMessage(str(self.iface.activeLayer().name()), MESSAGE_CATEGORY, Qgis.Info)
+        idtool.featureIdentified.connect(self.onFeatureIdentified)
+        self.iface.mapCanvas().setMapTool(idtool)
+
+    def onFeatureIdentified(self,feature):
+        QgsMessageLog.logMessage(str(feature), MESSAGE_CATEGORY, Qgis.Info)
+        self.featureHighlight = QgsHighlight(self.iface.mapCanvas(), feature.geometry(),
+                                             self.iface.activeLayer())
+        self.featureHighlight.setColor(QColor(255, 0, 0, 100))
+        self.featureHighlight.show()
+
 
     def add_action(
         self,
@@ -215,12 +229,6 @@ class GeoWebAnnotation:
             self.exportLayer(None, None, None, None, None, None, False)
         else:
             self.exportLayer(None, None, None, None, None, None, False)
-
-    def exportLayerAsTTL(self):
-        self.exportLayer(None,None,None,None,None,None,False)
-        
-    def exportLayerAsJSONLD(self):
-        self.exportLayer(None,None,None,None,None,None,False)
 
     ## Creates the export layer dialog for exporting layers as TTL.
     #  @param self The object pointer.

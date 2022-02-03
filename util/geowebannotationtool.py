@@ -1,13 +1,10 @@
-from qgis._gui import QgsMapToolIdentify
-from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature
+from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature, QgsHighlight
 from qgis.PyQt.QtCore import pyqtSignal, Qt
 from qgis.PyQt.QtGui import QColor, QKeySequence
-from qgis.PyQt.QtWidgets import QMessageBox
 from qgis.core import QgsProject, QgsPointXY, QgsRectangle, QgsWkbTypes,QgsCoordinateReferenceSystem, QgsCoordinateTransform
 from math import sqrt,pi,cos,sin
-from qgis.utils import iface
-from qgis.core import QgsProject, QgsGeometry, QgsVectorLayer
-from ..dialogs.webannotatedialog import AnnotateDialog
+from qgis.core import QgsApplication, QgsFeature
+from ..dialogs.annotationdialog import AnnotateDialog
 from qgis.core import Qgis,QgsTask, QgsMessageLog
 
 
@@ -91,8 +88,10 @@ class PolygonMapTool(QgsMapTool):
         self.canvas = canvas
         self.iface = iface
         self.status = 0
+        self.layercoords=[]
         self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
         self.rb.setColor(QColor(255, 0, 0, 100))
+        self.rb2=QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
 
     def keyPressEvent(self, e):
         if e.matches(QKeySequence.Undo):
@@ -105,40 +104,31 @@ class PolygonMapTool(QgsMapTool):
                 self.rb.reset(QgsWkbTypes.PolygonGeometry)
                 self.status = 1
             self.rb.addPoint(self.toMapCoordinates(e.pos()))
+            self.rb2.addPoint(self.toLayerCoordinates(self.iface.activeLayer(),e.pos()))
         else:
             if self.rb.numberOfVertices() > 2:
                 self.status = 0
                 self.selectionDone.emit()
                 instancelist=[]
                 rbgeom=self.rb.asGeometry()
-                msgBox=QMessageBox()
-                msgBox.setText(str(rbgeom))
-                msgBox.exec()
-                layer = iface.activeLayer()
-                for lyr in iface.layerTreeView().selectedLayers():
-                    destCrs = QgsCoordinateReferenceSystem(lyr.crs())
-                    #msgBox=QMessageBox()
-                    #msgBox.setText(str(lyr.crs())+" "+str(layer.crs()))
-                    #msgBox.exec();
-                    tr = QgsCoordinateTransform(layer.crs(), QgsProject.instance().crs(), QgsProject.instance())
-                    rbgeom.transform(tr)
-                    selfeat=[]
-                    for feat in lyr.getFeatures():
-                        geom = feat.geometry()
-                        #msgBox=QMessageBox()
-                        #msgBox.setText(str(rbgeom)+" "+str(geom))
-                        #msgBox.exec();
-                        if rbgeom.intersects(geom):
-                            msgBox=QMessageBox()
-                            msgBox.setText(str("intersects"))
-                            msgBox.exec()
-                            instancelist.append(feat)
-                            selfeat.append(feat.id())
-                    msgBox=QMessageBox()
-                    msgBox.setText(str(selfeat))
-                    msgBox.exec()
-                    #lyr.setSelectedFeatures(selfeat)
-                annod=AnnotateDialog(instancelist)
+                rb2geom = self.rb.asGeometry()
+                layer = self.iface.activeLayer()
+                QgsMessageLog.logMessage(str(rbgeom.asWkt()), MESSAGE_CATEGORY, Qgis.Info)
+                QgsMessageLog.logMessage(str(rb2geom.asWkt()), MESSAGE_CATEGORY, Qgis.Info)
+                QgsMessageLog.logMessage(str(layer), MESSAGE_CATEGORY, Qgis.Info)
+                QgsMessageLog.logMessage(str(self.layercoords), MESSAGE_CATEGORY, Qgis.Info)
+                #for lyr in self.iface.layerTreeView().activeLayer():
+                for feat in self.iface.activeLayer().getFeatures():
+                    geom = feat.geometry()
+                    QgsMessageLog.logMessage(str(geom.asWkt())+" - "+str(rb2geom.asWkt()), MESSAGE_CATEGORY, Qgis.Info)
+                    if rb2geom.intersects(geom):
+                        QgsMessageLog.logMessage("Intersects: "+str(feat.id()), MESSAGE_CATEGORY,
+                                                 Qgis.Info)
+                        instancelist.append(feat)
+                        #feat.append(feat.id())
+                QgsMessageLog.logMessage(str(len(instancelist)), MESSAGE_CATEGORY, Qgis.Info)
+                QgsMessageLog.logMessage(str(instancelist), MESSAGE_CATEGORY, Qgis.Info)
+                annod=AnnotateDialog(instancelist,self.iface.activeLayer())
                 annod.exec()
             else:
                 self.reset()
@@ -153,10 +143,12 @@ class PolygonMapTool(QgsMapTool):
 
     def reset(self):
         self.status = 0
+        self.layercoords=[]
         self.rb.reset(True)
 
     def deactivate(self):
         self.rb.reset(True)
+        self.layercoords = []
         QgsMapTool.deactivate(self)
 
 
@@ -174,16 +166,16 @@ class RectangleMapTool(QgsMapToolEmitPoint):
     def __init__(self, canvas):
         self.canvas = canvas.mapCanvas()
         QgsMapToolEmitPoint.__init__(self, self.canvas)
-        self.rubberBand = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
-        self.rubberBand.setColor(QColor(255, 0, 0, 100))
-        self.rubberBand.setWidth(2)
+        self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
+        self.rb.setColor(QColor(255, 0, 0, 100))
+        self.rb.setWidth(2)
         QgsMessageLog.logMessage("Initialized rectangle map tool", MESSAGE_CATEGORY, Qgis.Info)
         self.reset()
 
     def reset(self):
         self.startPoint = self.endPoint = None
         self.isEmittingPoint = False
-        self.rubberBand.reset(QgsWkbTypes.PolygonGeometry)
+        self.rb.reset(QgsWkbTypes.PolygonGeometry)
 
     def canvasPressEvent(self, e):
         self.startPoint = self.toMapCoordinates(e.pos())
@@ -204,7 +196,7 @@ class RectangleMapTool(QgsMapToolEmitPoint):
         self.showRect(self.startPoint, self.endPoint)
 
     def showRect(self, startPoint, endPoint):
-        self.rubberBand.reset(QgsWkbTypes.PolygonGeometry)
+        self.rb.reset(QgsWkbTypes.PolygonGeometry)
         QgsMessageLog.logMessage("Show rect ", MESSAGE_CATEGORY, Qgis.Info)
         if startPoint.x() == endPoint.x() or startPoint.y() == endPoint.y():
             return
@@ -214,12 +206,12 @@ class RectangleMapTool(QgsMapToolEmitPoint):
         self.point3 = QgsPointXY(endPoint.x(), endPoint.y())
         self.point4 = QgsPointXY(endPoint.x(), startPoint.y())
 
-        self.rubberBand.addPoint(self.point1, False)
-        self.rubberBand.addPoint(self.point2, False)
-        self.rubberBand.addPoint(self.point3, False)
+        self.rb.addPoint(self.point1, False)
+        self.rb.addPoint(self.point2, False)
+        self.rb.addPoint(self.point3, False)
         # True to update canvas
-        self.rubberBand.addPoint(self.point4, True)
-        self.rubberBand.show()
+        self.rb.addPoint(self.point4, True)
+        self.rb.show()
         chosen=True
 
     def rectangle(self):
@@ -249,36 +241,37 @@ class RectangleMapTool(QgsMapToolEmitPoint):
 
 
 class SelectMapTool(QgsMapToolIdentifyFeature):
-    
+
+    featureIdentified = pyqtSignal(QgsFeature)
+
     def __init__(self, iface):
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
         self.layer = self.iface.activeLayer()
-        QgsMapToolIdentifyFeature.__init__(self, self.canvas, self.layer)
-        self.iface.currentLayerChanged.connect(self.active_changed)
+        QgsMapToolIdentifyFeature.__init__(self, self.canvas)
+        self.rb = QgsRubberBand(self.iface.mapCanvas())
+        self.featureIdentified.connect(self.onIdentified)
         QgsMessageLog.logMessage("Initialized selection map tool!!! ", MESSAGE_CATEGORY, Qgis.Info)
         QgsMessageLog.logMessage(str(self.layer.name()), MESSAGE_CATEGORY, Qgis.Info)
-        
-    def active_changed(self, layer):
-        QgsMessageLog.logMessage("Active selection has changed!!! ", MESSAGE_CATEGORY, Qgis.Info)
-        self.layer.removeSelection()
-        if isinstance(layer, QgsVectorLayer) and layer.isSpatial():
-            self.layer = layer
-            self.setLayer(self.layer)
-            
-    def canvasPressEvent(self, event):
-        QgsMessageLog.logMessage("Found features " + str(event.x())+" "+str(event.y()), MESSAGE_CATEGORY, Qgis.Info)
-        found_features = self.identify(event.x(), event.y(), [self.layer], QgsMapToolIdentify.TopDownAll)
-        QgsMessageLog.logMessage("Found features "+str(found_features), MESSAGE_CATEGORY, Qgis.Info)
-        self.layer.selectByIds([f.mFeature.id() for f in found_features], QgsVectorLayer.AddToSelection)
+
+    def onIdentified(self, feature):
+        QgsMessageLog.logMessage("Found features " + str(feature), MESSAGE_CATEGORY, Qgis.Info)
+        #found_features = self.identify(event.x(), event.y(), [self.layer], QgsMapToolIdentify.TopDownAll)
+        QgsMessageLog.logMessage("Found features " + str(feature), MESSAGE_CATEGORY, Qgis.Info)
+        # self.layer.selectByIds([f.mFeature.id() for f in found_features], QgsVectorLayer.AddToSelection)
+        if len(feature) > 0:
+            self.featureHighlight = QgsHighlight(self.iface.mapCanvas(), self.referencingFeature.geometry(),
+                                                 self.relation.referencingLayer())
+            self.featureHighlight.setColor(QColor(255, 0, 0, 100))
+            self.featureHighlight.show()
+            self.featureIdentified.emit(feature)
         QgsMessageLog.logMessage("Canvas Pressed Event!!! ", MESSAGE_CATEGORY, Qgis.Info)
 
     def canvasReleaseEvent(self, e):
         self.status = 0
         self.point = self.toMapCoordinates(e.pos())
         QgsMessageLog.logMessage(str(e.pos())+" - "+str(self.point), MESSAGE_CATEGORY, Qgis.Info)
-        self.selectionDone.emit()
-        
+
     def deactivate(self):
         self.layer.removeSelection()        
 
