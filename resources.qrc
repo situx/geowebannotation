@@ -5,6 +5,7 @@
     <file>resources/icons/lineanno.png</file>
     <file>resources/icons/polygonanno.png</file>
     <file>resources/icons/selectanno.png</file>
+    <file>resources/icons/rectangleanno.png</file>
     <file>resources/icons/icon.png</file>
   </qresource>
 </RCC>
