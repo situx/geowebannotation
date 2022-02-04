@@ -42,21 +42,21 @@
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QPushButton" name="addAnnotation">
+    <widget class="QPushButton" name="addAnnotationButton">
      <property name="text">
       <string>Add Annotation</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QPushButton" name="editAnnotation">
+    <widget class="QPushButton" name="editAnnotationButton">
      <property name="text">
       <string>Edit Annotation</string>
      </property>
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QPushButton" name="removeAnnotation">
+    <widget class="QPushButton" name="removeAnnotationButton">
      <property name="text">
       <string>Remove Annotation</string>
      </property>

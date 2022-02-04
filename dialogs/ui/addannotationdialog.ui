@@ -56,7 +56,7 @@
     <widget class="QPlainTextEdit" name="textAnnotationEdit"/>
    </item>
    <item row="3" column="1">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="addAnnotationButton">
      <property name="text">
       <string>Add Annotation</string>
      </property>
