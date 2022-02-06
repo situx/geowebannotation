@@ -11,3 +11,8 @@ class UIUtils:
     rectangleannoicon = QIcon(":/icons/resources/icons/rectangleanno.png")
     geowebannotationicon = QIcon(":/icons/resources/icons/icon.png")
 
+    dataslot_conceptURI=256
+
+    dataslot_annotype=257
+
+    dataslot_annocontent=258
