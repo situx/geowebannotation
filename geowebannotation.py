@@ -62,11 +62,8 @@ class GeoWebAnnotation:
     exportNameSpace=None
 
     def __init__(self, iface):
-        # Save reference to the QGIS interface
         self.iface = iface
-        # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
@@ -77,13 +74,8 @@ class GeoWebAnnotation:
             self.translator = QTranslator()
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
-
-        # Declare instance attributes
         self.actions = []
         self.menu = self.tr(u'&GeoWebAnnotation')
-
-        # Check if plugin was started the first time in current QGIS session
-        # Must be set in initGui() to survive plugin reloads
         self.first_start = None
 
     # noinspection PyMethodMayBeStatic
