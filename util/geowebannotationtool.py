@@ -128,7 +128,7 @@ class PolygonMapTool(QgsMapTool):
                         #feat.append(feat.id())
                 QgsMessageLog.logMessage(str(len(instancelist)), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(instancelist), MESSAGE_CATEGORY, Qgis.Info)
-                annod=AnnotateDialog(instancelist,self.iface.activeLayer())
+                annod=AnnotateDialog(instancelist,self.iface.activeLayer(),rb2geom)
                 annod.exec()
             else:
                 self.reset()

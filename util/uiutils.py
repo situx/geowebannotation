@@ -16,3 +16,19 @@ class UIUtils:
     dataslot_annotype=257
 
     dataslot_annocontent=258
+
+    dataslot_annomotivation=259
+
+    dataslot_annolicense=260
+
+    dataslot_annocreator=261
+
+    dataslot_relation = 262
+
+    dataslot_target = 263
+
+    dataslot_language = 264
+
+    dataslot_annovalue= 265
+
+    dataslot_annovaluetype= 266

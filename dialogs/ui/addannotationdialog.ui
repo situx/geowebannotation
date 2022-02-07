@@ -14,7 +14,121 @@
    <string>Add Annotation</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Annotation Motivation:</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="1">
+    <widget class="QComboBox" name="annotationMotivationComboBox">
+     <item>
+      <property name="text">
+       <string>Assessing</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Bookmarking</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Classifying</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Commenting</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Describing</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Editing</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Highlighting</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Identifying</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Linking</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Moderating</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Questioning</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Replying</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Tagging</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Annotation License:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="licenseComboBox">
+     <item>
+      <property name="text">
+       <string>CC0 (Recommended)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>CC-BY-SA 4.0</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>AnnotationCreator:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLineEdit" name="creatorLineEdit"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Annotation Type:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
     <widget class="QComboBox" name="annotationTypeCBox">
      <item>
       <property name="text">
@@ -38,34 +152,40 @@
      </item>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Annotation Plain Text</string>
-     </property>
-    </widget>
+   <item row="4" column="1">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="chooseLanguageLabel">
+       <property name="text">
+        <string>Language:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="chooseLanguageComboBox">
+       <item>
+        <property name="text">
+         <string>en</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Annotation Type:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
+   <item row="5" column="1">
     <widget class="QPlainTextEdit" name="textAnnotationEdit"/>
    </item>
-   <item row="3" column="1">
-    <widget class="QPushButton" name="addAnnotationButton">
-     <property name="text">
-      <string>Add Annotation</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
+   <item row="6" column="0">
     <widget class="QPushButton" name="cancelButton">
      <property name="text">
       <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QPushButton" name="addAnnotationButton">
+     <property name="text">
+      <string>Add Annotation</string>
      </property>
     </widget>
    </item>

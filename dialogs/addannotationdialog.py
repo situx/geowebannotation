@@ -32,7 +32,11 @@ class AddAnnotationDialog(QDialog, FORM_CLASS):
             item.setText("TextAnnotation: "+self.textAnnotationEdit.toPlainText()[0:100])
             item.setData("TextAnnotation",UIUtils.dataslot_annotype)
             item.setData(self.textAnnotationEdit.toPlainText(),UIUtils.dataslot_annocontent)
-            self.selectionListView.addItem(item)
+            item.setData(self.licenseComboBox.currentText(), UIUtils.dataslot_annolicense)
+            item.setData(self.annotationMotivationComboBox.currentText(), UIUtils.dataslot_annomotivation)
+            item.setData(self.creatorLineEdit.text(), UIUtils.dataslot_annocreator)
+            item.setData(self.chooseLanguageComboBox.currentText(), UIUtils.dataslot_language)
+            self.selectionListView.appendRow(item)
             self.close()
 
 
