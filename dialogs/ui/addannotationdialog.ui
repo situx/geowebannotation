@@ -13,181 +13,254 @@
   <property name="windowTitle">
    <string>Add Annotation</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_4">
    <item row="0" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Annotation Motivation:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="annotationMotivationComboBox">
-     <item>
-      <property name="text">
-       <string>Assessing</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Bookmarking</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Classifying</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Commenting</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Describing</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Editing</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Highlighting</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Identifying</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Linking</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Moderating</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Questioning</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Replying</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Tagging</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Annotation License:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="licenseComboBox">
-     <item>
-      <property name="text">
-       <string>CC0 (Recommended)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>CC-BY-SA 4.0</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>AnnotationCreator:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLineEdit" name="creatorLineEdit"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Annotation Type:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QComboBox" name="annotationTypeCBox">
-     <item>
-      <property name="text">
-       <string>TextAnnotation</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>ExternalResource</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>ExternalResourceSegment</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Semantic Web</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="chooseLanguageLabel">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Language:</string>
+        <string>Annotation Type:</string>
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QComboBox" name="chooseLanguageComboBox">
+     <item row="3" column="1">
+      <widget class="QComboBox" name="annotationTypeCBox">
        <item>
         <property name="text">
-         <string>en</string>
+         <string>TextAnnotation</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ExternalResource</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>ExternalResourceSegment</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Semantic Web</string>
         </property>
        </item>
       </widget>
      </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="licenseComboBox">
+       <item>
+        <property name="text">
+         <string>CC0 (Recommended)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>CC-BY-SA 4.0</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>AnnotationCreator:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="creatorLineEdit"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Annotation License:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Annotation Motivation:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="annotationMotivationComboBox">
+       <item>
+        <property name="text">
+         <string>Assessing</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Bookmarking</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Classifying</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Commenting</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Describing</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Editing</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Highlighting</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Identifying</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Linking</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Moderating</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Questioning</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Replying</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Tagging</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QPushButton" name="addAnnotationButton">
+       <property name="text">
+        <string>Add Annotation</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QPushButton" name="cancelButton">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QStackedWidget" name="stackedWidget">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="page">
+        <widget class="QWidget" name="gridLayoutWidget_3">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>-10</y>
+           <width>421</width>
+           <height>161</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="valueEdit"/>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="relationEdit"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Value:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Relation:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QPushButton" name="searchRelationButton">
+            <property name="text">
+             <string>Search</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="serachRelationButton2">
+            <property name="text">
+             <string>Search</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <widget class="QWidget" name="gridLayoutWidget_2">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>421</width>
+           <height>151</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="0">
+           <widget class="QPlainTextEdit" name="textAnnotationEdit"/>
+          </item>
+          <item row="0" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="chooseLanguageLabel">
+              <property name="text">
+               <string>Language:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="chooseLanguageComboBox">
+              <item>
+               <property name="text">
+                <string>en</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+     </item>
     </layout>
-   </item>
-   <item row="5" column="1">
-    <widget class="QPlainTextEdit" name="textAnnotationEdit"/>
-   </item>
-   <item row="6" column="0">
-    <widget class="QPushButton" name="cancelButton">
-     <property name="text">
-      <string>Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QPushButton" name="addAnnotationButton">
-     <property name="text">
-      <string>Add Annotation</string>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>
