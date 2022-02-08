@@ -6,11 +6,8 @@ from qgis.core import (
 )
 from qgis.PyQt.QtGui import QRegExpValidator,QDesktopServices
 
-from .dataschemadialog import DataSchemaDialog
-from .menu.conceptcontextmenu import ConceptContextMenu
-from ..util.sparqlutils import SPARQLUtils
 from ..tasks.searchtask import SearchTask
-from ..util.ui.uiutils import UIUtils
+from ..util.uiutils import UIUtils
 import os.path
 
 
@@ -86,21 +83,10 @@ class SearchDialog(QDialog, FORM_CLASS):
         menu = QMenu("Menu", self)
         actionclip = QAction("Copy IRI to clipboard")
         menu.addAction(actionclip)
-        actionclip.triggered.connect(lambda: ConceptContextMenu.copyClipBoard(self.currentItem))
+        actionclip.triggered.connect(lambda: UIUtils.copyClipBoard(self.currentItem))
         action = QAction("Open in Webbrowser")
         menu.addAction(action)
         action.triggered.connect(lambda: UIUtils.openListURL(self.currentItem))
-        actiondataschema = QAction("Query data schema")
-        menu.addAction(actiondataschema)
-        actiondataschema.triggered.connect(lambda: DataSchemaDialog(
-            self.currentItem.data(256),
-            SPARQLUtils.classnode,
-            self.currentItem.text(),
-            self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"],
-            self.triplestoreconf[self.tripleStoreEdit.currentIndex()], self.prefixes,
-            "Data Schema View for " + SPARQLUtils.labelFromURI(str(self.currentItem.data(
-                256)),self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["prefixesrev"] if "prefixesrev" in self.triplestoreconf[self.tripleStoreEdit.currentIndex()] else {})
-        ).exec_())
         menu.exec(self.searchResult.viewport().mapToGlobal(position))
 
     ##

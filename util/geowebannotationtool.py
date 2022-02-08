@@ -15,8 +15,9 @@ class CircleMapTool(QgsMapTool):
     selectionDone = pyqtSignal()
     move = pyqtSignal()
 
-    def __init__(self, iface, segments):
+    def __init__(self, iface, segments,triplestoreconf):
         canvas = iface.mapCanvas()
+        self.triplestoreconf=triplestoreconf
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
@@ -82,8 +83,9 @@ class PolygonMapTool(QgsMapTool):
     selectionDone = pyqtSignal()
     move = pyqtSignal()
 
-    def __init__(self, iface):
+    def __init__(self, iface,triplestoreconf):
         canvas = iface.mapCanvas()
+        self.triplestoreconf=triplestoreconf
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
@@ -128,7 +130,7 @@ class PolygonMapTool(QgsMapTool):
                         #feat.append(feat.id())
                 QgsMessageLog.logMessage(str(len(instancelist)), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(instancelist), MESSAGE_CATEGORY, Qgis.Info)
-                annod=AnnotateDialog(instancelist,self.iface.activeLayer(),rb2geom)
+                annod=AnnotateDialog(instancelist,self.iface.activeLayer(),rb2geom,self.triplestoreconf)
                 annod.exec()
             else:
                 self.reset()
@@ -163,8 +165,9 @@ class RectangleMapTool(QgsMapToolEmitPoint):
     point4=""
     chosen=False
 
-    def __init__(self, canvas):
+    def __init__(self, canvas,triplestoreconf):
         self.canvas = canvas.mapCanvas()
+        self.triplestoreconf=triplestoreconf
         QgsMapToolEmitPoint.__init__(self, self.canvas)
         self.rb = QgsRubberBand(self.canvas, QgsWkbTypes.PolygonGeometry)
         self.rb.setColor(QColor(255, 0, 0, 100))
@@ -244,8 +247,9 @@ class SelectMapTool(QgsMapToolIdentifyFeature):
 
     featureIdentified = pyqtSignal(QgsFeature)
 
-    def __init__(self, iface):
+    def __init__(self, iface,triplestoreconf):
         self.iface = iface
+        self.triplestoreconf=triplestoreconf
         self.canvas = self.iface.mapCanvas()
         self.layer = self.iface.activeLayer()
         QgsMapToolIdentifyFeature.__init__(self, self.canvas)
@@ -281,8 +285,9 @@ class LineMapTool(QgsMapTool):
     selectionDone = pyqtSignal()
     move = pyqtSignal()
 
-    def __init__(self, iface):
+    def __init__(self, iface,triplestoreconf):
         canvas = iface.mapCanvas()
+        self.triplestoreconf=triplestoreconf
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
@@ -320,8 +325,9 @@ class PointMapTool(QgsMapTool):
     selectionDone = pyqtSignal()
     move = pyqtSignal()
 
-    def __init__(self, iface):
+    def __init__(self, iface,triplestoreconf):
         canvas = iface.mapCanvas()
+        self.triplestoreconf=triplestoreconf
         QgsMapTool.__init__(self, canvas)
         self.canvas = canvas
         self.iface = iface
