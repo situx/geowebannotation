@@ -18,16 +18,17 @@ MESSAGE_CATEGORY="GeoWebAnnotation"
 
 class AnnotateDialog(QDialog,FORM_CLASS):
 	
-    def __init__(self,selectedresources,activelayer,selectiongeometry,resultlayer=None):
+    def __init__(self,selectedresources,activelayer,selectiongeometry,triplestoreconf,resultlayer=None):
         super(AnnotateDialog, self).__init__()
         self.setupUi(self)
+        self.triplestoreconf=triplestoreconf
         self.model = QtGui.QStandardItemModel()
         self.model2 = QtGui.QStandardItemModel()
         self.selectiongeometry=selectiongeometry
         self.activelayer=activelayer
         self.selectionListView.setModel(self.model)
         self.annotationListView.setModel(self.model2)
-        self.addAnnotationButton.clicked.connect(lambda: AddAnnotationDialog(self.model2,self.activelayer.name()).exec())
+        self.addAnnotationButton.clicked.connect(lambda: AddAnnotationDialog(self.model2,self.activelayer.name(),self.triplestoreconf).exec())
         self.editAnnotationButton.clicked.connect(self.editAnnotationFunc)
         self.removeAnnotationButton.clicked.connect(lambda: self.selectionListView.removeItem(self.selectionListView.currentIndex()))
         self.applyButton.clicked.connect(self.applyAnnotationToLayer)
@@ -56,7 +57,7 @@ class AnnotateDialog(QDialog,FORM_CLASS):
 
     def editAnnotationFunc(self):
         selected=self.selectionListView.selectionModel().selectedIndexes()[0]
-        AddAnnotationDialog(self.model2,self.activelayer.name(),selected.data(UIUtils.dataslot_conceptURI),selected.data(UIUtils.dataslot_annocontent))
+        AddAnnotationDialog(self.model2,self.activelayer.name(),self.triplestoreconf,selected.data(UIUtils.dataslot_conceptURI),selected.data(UIUtils.dataslot_annocontent))
 
     """Creating a specifically modified vector layer which could be converted to JSON-LD (W3C Web Annotation Data Model)"""
     def applyAnnotationToLayer(self):

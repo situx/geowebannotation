@@ -1,6 +1,10 @@
 <RCC>
   <qresource prefix="icons">
     <file>resources/icons/circleanno.png</file>
+    <file>resources/icons/class.png</file>
+    <file>resources/icons/classlink.png</file>
+    <file>resources/icons/searchclass.png</file>
+    <file>resources/icons/objectproperty.png</file>
     <file>resources/icons/pointanno.png</file>
     <file>resources/icons/lineanno.png</file>
     <file>resources/icons/polygonanno.png</file>
