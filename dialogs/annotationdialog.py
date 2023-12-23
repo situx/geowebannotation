@@ -37,7 +37,7 @@ class AnnotateDialog(QDialog,FORM_CLASS):
             item = QStandardItem(str(activelayer.name())+": "+str(i.id()))
             self.model.appendRow(item)
         if resultlayer==None:
-            self.resultlayer=QgsVectorLayer("Polygon", "AnnotationLayer", "memory")
+            self.resultlayer=QgsVectorLayer("Polygon", "geowebannotation_AnnotationLayer", "memory")
             self.pr = self.resultlayer.dataProvider()
             self.pr.addAttributes([
                               QgsField("motivation", QVariant.String),
@@ -84,6 +84,7 @@ class AnnotateDialog(QDialog,FORM_CLASS):
         QgsMessageLog.logMessage('Started task "{}"'.format(len(self.resultlayer.fields())), MESSAGE_CATEGORY, Qgis.Info)
         #for index in range(0,self.model2.rowCount()):
         QgsProject.instance().addMapLayer(self.resultlayer)
+        self.close()
 
 
 

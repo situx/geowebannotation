@@ -22,7 +22,7 @@ class AddAnnotationDialog(QDialog, FORM_CLASS):
         self.searchRelationButton.setIcon(UIUtils.searchclassicon)
         self.searchRelationButton2.setIcon(UIUtils.searchclassicon)
         self.searchRelationButton.clicked.connect(lambda: self.buildSearchDialog(-1,-1,False,None,1,False,None,None))
-        self.searchRelationButton2.clicked.connect(lambda: self.buildSearchDialog(-1, -1, False, None, 0, False, None, None))
+        self.searchRelationButton2.clicked.connect(lambda: self.buildSearchDialog(-1, -1, False, None, -1, False, None, None))
         self.addAnnotationButton.clicked.connect(self.saveAnnotation)
         self.stackedWidget.setCurrentIndex(1)
         self.show()

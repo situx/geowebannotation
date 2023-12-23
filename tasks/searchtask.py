@@ -51,7 +51,7 @@ class SearchTask(QgsTask):
         if "SELECT" in self.query:
             self.query = self.query.replace("%%label%%", self.label).replace("%%language%%", self.language)
             self.results = SPARQLUtils.executeQuery(self.triplestoreurl,
-                                               self.prefixes[self.tripleStoreEdit.currentIndex()] + self.query,
+                                               self.query,
                                                     self.triplestoreconf[self.tripleStoreEdit.currentIndex()])
             if self.results == False:
                 return False
@@ -84,7 +84,7 @@ class SearchTask(QgsTask):
             if self.results==False:
                 msgBox = QMessageBox()
                 msgBox.setWindowTitle("Error while performing search")
-                msgBox.setText("An error occured while performing the search")
+                msgBox.setText("An error occurred while performing the search")
                 msgBox.exec()
                 return
             if self.results!=None and "results" in self.results and (len(self.results["results"]) == 0 or len(self.results["results"]["bindings"]) == 0):
@@ -93,6 +93,7 @@ class SearchTask(QgsTask):
                 msgBox.setText("The search yielded no results")
                 msgBox.exec()
                 return
+            QgsMessageLog.logMessage('Started task "{}" Query:'.format(self.results), MESSAGE_CATEGORY, Qgis.Info)
             for res in self.results["results"]["bindings"]:
                 item = QListWidgetItem()
                 if not self.findProperty.isChecked():
@@ -114,7 +115,7 @@ class SearchTask(QgsTask):
                     item.setIcon(UIUtils.classicon)
                 else:
                     item.setIcon(UIUtils.objectpropertyicon)
-                item.setData(256, self.qids[i])
+                item.setData(UIUtils.dataslot_conceptURI, self.qids[i])
                 item.setToolTip(self.qids[i])
                 item.setText(str(self.results[result]))
                 self.searchResult.addItem(item)
