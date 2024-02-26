@@ -80,6 +80,9 @@ class GeoWebAnnotation:
         with open(os.path.join(__location__, 'conf/triplestoreconf.json'), 'r') as myfile:
             data = myfile.read()
         self.triplestoreconf=json.loads(data)
+        with open(os.path.join(__location__, 'conf/languages.json'), 'r') as myfile:
+            datalangs = myfile.read()
+        self.languagemap = json.loads(datalangs)
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -94,23 +97,23 @@ class GeoWebAnnotation:
 
     def choose_point_mapping_tool(self):
         QgsMessageLog.logMessage("Selected point mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( PointMapTool(self.iface,self.triplestoreconf) )
+        self.iface.mapCanvas().setMapTool( PointMapTool(self.iface,self.triplestoreconf,self.languagemap) )
 
     def choose_line_mapping_tool(self):
         QgsMessageLog.logMessage("Selected line mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( LineMapTool(self.iface,self.triplestoreconf) )
+        self.iface.mapCanvas().setMapTool( LineMapTool(self.iface,self.triplestoreconf,self.languagemap) )
 
     def choose_polygon_mapping_tool(self):
         QgsMessageLog.logMessage("Selected polygon mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( PolygonMapTool(self.iface,self.triplestoreconf) )
+        self.iface.mapCanvas().setMapTool( PolygonMapTool(self.iface,self.triplestoreconf,self.languagemap) )
 
     def choose_circle_mapping_tool(self):
         QgsMessageLog.logMessage("Selected circle mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( CircleMapTool(self.iface,1,self.triplestoreconf) )
+        self.iface.mapCanvas().setMapTool( CircleMapTool(self.iface,1,self.triplestoreconf,self.languagemap) )
 
     def choose_rectangle_mapping_tool(self):
         QgsMessageLog.logMessage("Selected rectangle mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface.mapCanvas(),self.triplestoreconf) )
+        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface.mapCanvas(),self.triplestoreconf,self.languagemap) )
 
     def choose_select_mapping_tool(self):
         QgsMessageLog.logMessage("Selected select mapping tool", MESSAGE_CATEGORY, Qgis.Info)

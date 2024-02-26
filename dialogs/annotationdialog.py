@@ -18,7 +18,7 @@ MESSAGE_CATEGORY="GeoWebAnnotation"
 
 class AnnotationDialog(QDialog, FORM_CLASS):
 	
-    def __init__(self,selectedresources,activelayer,selectiongeometry,triplestoreconf,resultlayer=None):
+    def __init__(self,selectedresources,activelayer,selectiongeometry,triplestoreconf,languagemap={},resultlayer=None):
         super(AnnotationDialog, self).__init__()
         self.setupUi(self)
         self.triplestoreconf=triplestoreconf

@@ -11,27 +11,28 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class AddAnnotationDialog(QDialog, FORM_CLASS):
 
-    def __init__(self, selectionListView,target,triplestoreconf,annotationrel="",annotationcontent=""):
+    def __init__(self, selectionListView,target,triplestoreconf, languagemap={},annotationrel="",annotationcontent=""):
         super(AddAnnotationDialog, self).__init__()
         self.setupUi(self)
         self.selectionListView=selectionListView
         self.triplestoreconf=triplestoreconf
         self.target=target
+        self.languagemap=languagemap
         self.annotationTypeCBox.currentIndexChanged.connect(self.annotationTypeChanged)
         self.cancelButton.clicked.connect(self.close)
         self.searchRelationButton.setIcon(UIUtils.searchclassicon)
         self.searchRelationButton2.setIcon(UIUtils.searchclassicon)
-        self.searchRelationButton.clicked.connect(lambda: self.buildSearchDialog(-1,-1,False,None,1,False,None,None))
-        self.searchRelationButton2.clicked.connect(lambda: self.buildSearchDialog(-1, -1, False, None, -1, False, None, None))
+        self.searchRelationButton.clicked.connect(lambda: self.buildSearchDialog(-1,-1,self.languagemap,False,None,True,False,None,None))
+        self.searchRelationButton2.clicked.connect(lambda: self.buildSearchDialog(-1, -1, self.languagemap,False, None, False, False, None, None))
         self.addAnnotationButton.clicked.connect(self.saveAnnotation)
         self.stackedWidget.setCurrentIndex(1)
         self.show()
 
-    def buildSearchDialog(self,row=-1, column=-1, interlinkOrEnrich=False, table=None, propOrClass=1, bothOptions=False,
+    def buildSearchDialog(self,row=-1, column=-1, languagemap={},interlinkOrEnrich=False, table=None, propOrClass=True, bothOptions=False,
                           currentprefixes=None, addVocabConf=None):
         self.currentcol = column
         self.currentrow = row
-        self.interlinkdialog = SearchDialog(column, row, self.triplestoreconf, None, interlinkOrEnrich, table,
+        self.interlinkdialog = SearchDialog(column, row, self.triplestoreconf, None,languagemap, interlinkOrEnrich, table,
                                             propOrClass, bothOptions, currentprefixes, addVocabConf)
         self.interlinkdialog.setMinimumSize(650, 400)
         self.interlinkdialog.setWindowTitle("Search Interlink Concept")
