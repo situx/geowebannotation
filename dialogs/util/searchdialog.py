@@ -1,18 +1,21 @@
 
-from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QListWidgetItem, QTableWidgetItem, QMenu, QAction,QApplication
+from qgis.PyQt.QtWidgets import QDialog, QListWidgetItem, QTableWidgetItem, QMenu, QAction
 from qgis.PyQt import uic
 from qgis.core import (
-    QgsApplication, QgsMessageLog
+    QgsApplication
 )
-from qgis.PyQt.QtGui import QRegExpValidator,QDesktopServices
+from qgis.PyQt.QtGui import QRegExpValidator, QStandardItemModel
 
-from ..tasks.searchtask import SearchTask
-from ..util.uiutils import UIUtils
+from ..dataview.dataschemadialog import DataSchemaDialog
+from ..menu.conceptcontextmenu import ConceptContextMenu
+from ...util.sparqlutils import SPARQLUtils
+from ...tasks.query.searchtask import SearchTask
+from ...util.ui.uiutils import UIUtils
 import os.path
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'ui/searchdialog.ui'))
+    os.path.dirname(__file__), '../ui/searchdialog.ui'))
 
 # Class representing a search dialog which may be used to search for concepts or properties.
 class SearchDialog(QDialog, FORM_CLASS):
@@ -43,7 +46,7 @@ class SearchDialog(QDialog, FORM_CLASS):
     #
     #  @details More details
     #
-    def __init__(self, column, row, triplestoreconf, prefixes, interlinkOrEnrich, table, propOrClass=False, bothOptions=False, currentprefixes=None, addVocab=None):
+    def __init__(self, column, row, triplestoreconf, prefixes,languagemap, interlinkOrEnrich, table, propOrClass=False, bothOptions=False, currentprefixes=None, addVocab=None):
         super(QDialog, self).__init__()
         self.setupUi(self)
         self.setWindowIcon(UIUtils.searchclassicon)
@@ -64,8 +67,8 @@ class SearchDialog(QDialog, FORM_CLASS):
         if not bothOptions:
             self.findProperty.setEnabled(False)
             self.findConcept.setEnabled(False)
-        for triplestore in self.triplestoreconf:
-            self.tripleStoreEdit.addItem(triplestore["name"])
+        UIUtils.createTripleStoreCBox(self.tripleStoreEdit,self.triplestoreconf)
+        UIUtils.createLanguageSelectionCBox(self.languageCBox,languagemap)
         if addVocab != None:
             for cov in addVocab:
                 self.tripleStoreEdit.addItem(addVocab[cov]["label"])
@@ -82,11 +85,25 @@ class SearchDialog(QDialog, FORM_CLASS):
         self.currentItem = self.searchResult.itemAt(position)
         menu = QMenu("Menu", self)
         actionclip = QAction("Copy IRI to clipboard")
+        actionclip.setIcon(UIUtils.classlinkicon)
         menu.addAction(actionclip)
-        actionclip.triggered.connect(lambda: UIUtils.copyClipBoard(self.currentItem))
+        actionclip.triggered.connect(lambda: ConceptContextMenu.copyClipBoard(self.currentItem))
         action = QAction("Open in Webbrowser")
+        action.setIcon(UIUtils.geoclassicon)
         menu.addAction(action)
         action.triggered.connect(lambda: UIUtils.openListURL(self.currentItem))
+        actiondataschema = QAction("Query data schema")
+        actiondataschema.setIcon(UIUtils.classschemaicon)
+        menu.addAction(actiondataschema)
+        actiondataschema.triggered.connect(lambda: DataSchemaDialog(
+            self.currentItem.data(UIUtils.dataslot_conceptURI),
+            SPARQLUtils.classnode,
+            self.currentItem.text(),
+            self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"],
+            self.triplestoreconf[self.tripleStoreEdit.currentIndex()], self.prefixes,
+            "Data Schema View for " + SPARQLUtils.labelFromURI(str(self.currentItem.data(
+                UIUtils.dataslot_conceptURI)),self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["prefixesrev"] if "prefixesrev" in self.triplestoreconf[self.tripleStoreEdit.currentIndex()] else {})
+        ))
         menu.exec(self.searchResult.viewport().mapToGlobal(position))
 
     ##
@@ -101,7 +118,7 @@ class SearchDialog(QDialog, FORM_CLASS):
         label = self.conceptSearchEdit.text()
         if label == "":
             return
-        language = self.languageCBox.currentText()
+        language = self.languageCBox.currentData(UIUtils.dataslot_language)
         results = {}
         self.searchResult.clear()
         query = ""
@@ -109,19 +126,20 @@ class SearchDialog(QDialog, FORM_CLASS):
         if self.tripleStoreEdit.currentIndex() > len(self.triplestoreconf):
             if self.findProperty.isChecked():
                 self.addVocab[self.addVocab.keys()[position - len(self.triplestoreconf)]]["source"]["properties"]
-                viewlist = {k: v for k, v in d.iteritems() if label in k}
+                viewlist = {k: v for k, v in self.addVocab[self.addVocab.keys()[position - len(self.triplestoreconf)]]["source"]["properties"].iteritems() if label in k}
             else:
                 self.addVocab[self.addVocab.keys()[position - len(self.triplestoreconf)]]["source"]["classes"]
-                viewlist = {k: v for k, v in d.iteritems() if label in k}
+                viewlist = {k: v for k, v in self.addVocab[self.addVocab.keys()[position - len(self.triplestoreconf)]]["source"]["properties"].iteritems() if label in k}
             for res in viewlist:
                 item = QListWidgetItem()
-                item.setData(256, val)
-                item.setText(key)
+                item.setData(UIUtils.dataslot_conceptURI, res)
+                item.setText(res)
                 self.searchResult.addItem(item)
         else:
             self.qtask=SearchTask("Searching classes/properties for "+str(label)+" in "+str(self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"]["url"]),
                             self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"],
-               query,self.triplestoreconf,self.findProperty,self.tripleStoreEdit,self.searchResult,self.prefixes,label,language,None)
+               query,self.triplestoreconf,self.findProperty,self.tripleStoreEdit,
+                                  self.searchResult,self.prefixes,label,language,None)
             QgsApplication.taskManager().addTask(self.qtask)
         return viewlist
 
@@ -138,7 +156,7 @@ class SearchDialog(QDialog, FORM_CLASS):
         else:
             if self.searchResult.count() == 0:
                 return
-            toinsert = str(self.searchResult.currentItem().data(256))
+            toinsert = str(self.searchResult.currentItem().data(UIUtils.dataslot_conceptURI))
         if self.bothOptions == True:
             haschanged = False
             if self.currentprefixes != None:
@@ -151,7 +169,7 @@ class SearchDialog(QDialog, FORM_CLASS):
             else:
                 self.table.insertPlainText("<" + toinsert + ">")
         elif self.interlinkOrEnrich == -1:
-            self.table.setText(str(toinsert))
+            self.table.setText(str(self.tripleStoreEdit.currentIndex())+"_"+str(toinsert))
         else:
             if costumURI:
                 item = QTableWidgetItem(toinsert)
@@ -159,13 +177,13 @@ class SearchDialog(QDialog, FORM_CLASS):
             else:
                 item = QTableWidgetItem(self.searchResult.currentItem().text())
                 item.setText(self.searchResult.currentItem().text())
-            item.setData(256, toinsert)
+            item.setData(UIUtils.dataslot_conceptURI, toinsert)
             if self.interlinkOrEnrich:
                 self.table.setItem(self.currentrow, self.currentcol, item)
             else:
                 item2 = QTableWidgetItem()
                 item2.setText(self.tripleStoreEdit.currentText())
-                item2.setData(257, self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"])
+                item2.setData(UIUtils.dataslot_nodetype, self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"])
                 self.table.setItem(self.currentrow, self.currentcol, item)
                 self.table.setItem(self.currentrow, (self.currentcol), item2)
         self.close()

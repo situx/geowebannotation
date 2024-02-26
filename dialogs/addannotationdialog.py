@@ -1,10 +1,10 @@
-from qgis.PyQt.QtWidgets import QDialog, QMessageBox, QLineEdit
+from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.QtGui import QStandardItem
 from qgis.PyQt import uic
 import os.path
 
-from ..util.uiutils import UIUtils
-from .searchdialog import SearchDialog
+from ..util.ui.uiutils import UIUtils
+from .util.searchdialog import SearchDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ui/addannotationdialog.ui'))

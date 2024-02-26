@@ -1,8 +1,8 @@
 import json
 import requests
 
-from ..util.uiutils import UIUtils
-from ..util.sparqlutils import SPARQLUtils
+from ...util.ui.uiutils import UIUtils
+from ...util.sparqlutils import SPARQLUtils
 from qgis.utils import iface
 from qgis.core import Qgis,QgsTask, QgsMessageLog
 from qgis.PyQt.QtWidgets import QListWidgetItem, QMessageBox

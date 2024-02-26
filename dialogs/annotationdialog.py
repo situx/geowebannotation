@@ -5,10 +5,10 @@ from qgis.PyQt.QtGui import QStandardItem
 from qgis.PyQt import QtGui
 from qgis.PyQt import uic
 import os.path
-from qgis.core import Qgis,QgsTask, QgsMessageLog
+from qgis.core import Qgis, QgsMessageLog
 from qgis.core import QgsFeature, QgsVectorLayer, QgsField, QgsProject
 
-from ..util.uiutils import UIUtils
+from ..util.ui.uiutils import UIUtils
 from .addannotationdialog import AddAnnotationDialog
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -16,10 +16,10 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 MESSAGE_CATEGORY="GeoWebAnnotation"
 
-class AnnotateDialog(QDialog,FORM_CLASS):
+class AnnotationDialog(QDialog, FORM_CLASS):
 	
     def __init__(self,selectedresources,activelayer,selectiongeometry,triplestoreconf,resultlayer=None):
-        super(AnnotateDialog, self).__init__()
+        super(AnnotationDialog, self).__init__()
         self.setupUi(self)
         self.triplestoreconf=triplestoreconf
         self.model = QtGui.QStandardItemModel()

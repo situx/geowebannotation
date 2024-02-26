@@ -24,14 +24,14 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 from qgis._core import QgsWkbTypes
-from qgis.core import QgsProject, Qgis
+from qgis.core import QgsProject
 from qgis.PyQt.QtGui import QColor
-from qgis.gui import QgsMapToolEmitPoint, QgsRubberBand,QgsMapTool,QgsMapToolIdentifyFeature, QgsHighlight
+from qgis.gui import QgsMapToolIdentifyFeature, QgsHighlight
 
 # Initialize Qt resources from file resources.py
 import os.path
 import sys
-from .resources import *
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "dependencies")))
 import uuid
 import re
@@ -40,15 +40,14 @@ import urllib.parse
 from rdflib import *
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 # Import the code for the dialog
-from .util.uiutils import UIUtils
+from .util.ui.uiutils import UIUtils
 from .dialogs.geowebannotation_dialog import GeoWebAnnotationDialog
-from .util.geowebannotationtool import CircleMapTool, LineMapTool
-from .util.geowebannotationtool import RectangleMapTool
-from .util.geowebannotationtool import PolygonMapTool
-from .util.geowebannotationtool import PointMapTool
-from .util.geowebannotationtool import SelectMapTool
+from .util.ui.geowebannotationtool import CircleMapTool, LineMapTool
+from .util.ui.geowebannotationtool import RectangleMapTool
+from .util.ui.geowebannotationtool import PolygonMapTool
+from .util.ui.geowebannotationtool import PointMapTool
 from .dialogs.loadgraphdialog import LoadGraphDialog
-from qgis.core import Qgis,QgsTask, QgsMessageLog
+from qgis.core import Qgis, QgsMessageLog
 
 MESSAGE_CATEGORY = 'GeoWebAnnotation'
 
@@ -462,22 +461,6 @@ class GeoWebAnnotation:
         if self.first_start == True:
             self.first_start = False
             self.dlg = GeoWebAnnotationDialog()
-
-        # Fetch the currently loaded layers
-        layers = QgsProject.instance().layerTreeRoot().children()
-        # Clear the contents of the comboBox from previous runs
-        self.dlg.layerToAnnotateComboBox.clear()
-        # Populate the comboBox with names of all the loaded layers
-        layerlist=[]
-        for layer in layers:
-            if not "webannotation" in layer.name():
-                layerlist.append(layer.name())
-        self.dlg.layerToAnnotateComboBox.addItems(layerlist)
-        annotationlayers=[]
-        for layer in layers:
-            if "webannotation" in layer.name():
-                annotationlayers.append(layer.name())
-        self.dlg.selectAnnotationLayerComboBox.addItems(annotationlayers)    
         self.dlg.loadAnnotationLayerButton.clicked.connect(self.buildLoadGraphDialog)
         self.dlg.saveLayerButton.clicked.connect(self.saveLayer)
         # show the dialog

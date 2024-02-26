@@ -4,7 +4,7 @@ from qgis.PyQt.QtGui import QColor, QKeySequence
 from qgis.core import QgsProject, QgsPointXY, QgsRectangle, QgsWkbTypes,QgsCoordinateReferenceSystem, QgsCoordinateTransform
 from math import sqrt,pi,cos,sin
 from qgis.core import QgsApplication, QgsFeature
-from ..dialogs.annotationdialog import AnnotateDialog
+from ...dialogs.annotationdialog import AnnotationDialog
 from qgis.core import Qgis,QgsTask, QgsMessageLog
 
 
@@ -130,7 +130,7 @@ class PolygonMapTool(QgsMapTool):
                         #feat.append(feat.id())
                 QgsMessageLog.logMessage(str(len(instancelist)), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(instancelist), MESSAGE_CATEGORY, Qgis.Info)
-                annod=AnnotateDialog(instancelist,self.iface.activeLayer(),rb2geom,self.triplestoreconf)
+                annod=AnnotationDialog(instancelist, self.iface.activeLayer(), rb2geom, self.triplestoreconf)
                 annod.exec()
             else:
                 self.reset()
