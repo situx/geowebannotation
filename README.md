@@ -1,1 +1,1 @@
-# myfirstqgisplugin
+# GeoWebAnnotation Plugin for QGIS
