@@ -26,88 +26,98 @@ A tiny example:
     >>> s = g.serialize(format='nt')
     >>>
     >>> sorted(g) == [
-    ...  (URIRef(u'http://meetings.example.com/cal#m1'),
-    ...   URIRef(u'http://www.example.org/meeting_organization#homePage'),
-    ...   URIRef(u'http://meetings.example.com/m1/hp')),
-    ...  (URIRef(u'http://www.example.org/people#fred'),
-    ...   URIRef(u'http://www.example.org/meeting_organization#attending'),
-    ...   URIRef(u'http://meetings.example.com/cal#m1')),
-    ...  (URIRef(u'http://www.example.org/people#fred'),
-    ...   URIRef(u'http://www.example.org/personal_details#GivenName'),
-    ...   Literal(u'Fred')),
-    ...  (URIRef(u'http://www.example.org/people#fred'),
-    ...   URIRef(u'http://www.example.org/personal_details#hasEmail'),
-    ...   URIRef(u'mailto:fred@example.com'))
+    ...  (URIRef("http://meetings.example.com/cal#m1"),
+    ...   URIRef("http://www.example.org/meeting_organization#homePage"),
+    ...   URIRef("http://meetings.example.com/m1/hp")),
+    ...  (URIRef("http://www.example.org/people#fred"),
+    ...   URIRef("http://www.example.org/meeting_organization#attending"),
+    ...   URIRef("http://meetings.example.com/cal#m1")),
+    ...  (URIRef("http://www.example.org/people#fred"),
+    ...   URIRef("http://www.example.org/personal_details#GivenName"),
+    ...   Literal("Fred")),
+    ...  (URIRef("http://www.example.org/people#fred"),
+    ...   URIRef("http://www.example.org/personal_details#hasEmail"),
+    ...   URIRef("mailto:fred@example.com"))
     ... ]
     True
 
 """
+import logging
+import sys
+from importlib import metadata
+
+_DISTRIBUTION_METADATA = metadata.metadata("rdflib")
+
 __docformat__ = "restructuredtext en"
 
-# The format of the __version__ line is matched by a regex in setup.py
-__version__ = "4.2.2"
-__date__ = "2017/01/29"
+__version__: str = _DISTRIBUTION_METADATA["Version"]
+__date__ = "2023-08-02"
 
 __all__ = [
-    'URIRef',
-    'BNode',
-    'Literal',
-    'Variable',
-
-    'Namespace',
-
-    'Dataset',
-    'Graph',
-    'ConjunctiveGraph',
-
-    'RDF',
-    'RDFS',
-    'OWL',
-    'XSD',
-
-    'util',
+    "URIRef",
+    "BNode",
+    "IdentifiedNode",
+    "Literal",
+    "Variable",
+    "Namespace",
+    "Dataset",
+    "Graph",
+    "ConjunctiveGraph",
+    "BRICK",
+    "CSVW",
+    "DC",
+    "DCAT",
+    "DCMITYPE",
+    "DCTERMS",
+    "DOAP",
+    "FOAF",
+    "ODRL2",
+    "ORG",
+    "OWL",
+    "PROF",
+    "PROV",
+    "QB",
+    "RDF",
+    "RDFS",
+    "SDO",
+    "SH",
+    "SKOS",
+    "SOSA",
+    "SSN",
+    "TIME",
+    "VANN",
+    "VOID",
+    "XMLNS",
+    "XSD",
+    "util",
+    "plugin",
+    "query",
+    "NORMALIZE_LITERALS",
 ]
 
-import sys
-assert sys.version_info >= (2, 5, 0), "rdflib requires Python 2.5 or higher"
+logger = logging.getLogger(__name__)
 
-import logging
-_interactive_mode = False
 try:
     import __main__
-    if not hasattr(__main__, '__file__') and sys.stdout!=None and sys.stderr.isatty():
+
+    if (
+        not hasattr(__main__, "__file__")
+        and sys.stdout is not None
+        and hasattr(sys.stderr, "isatty")
+        and sys.stderr.isatty()
+    ):
         # show log messages in interactive mode
-        _interactive_mode = True
-        logging.basicConfig(level=logging.INFO)
+        logger.setLevel(logging.INFO)
+        logger.addHandler(logging.StreamHandler())
     del __main__
 except ImportError:
-    #Main already imported from elsewhere
+    # Main already imported from elsewhere
     import warnings
-    warnings.warn('__main__ already imported', ImportWarning)
+
+    warnings.warn("__main__ already imported", ImportWarning)
     del warnings
 
-logger = logging.getLogger(__name__)
-if _interactive_mode:
-    logger.info("RDFLib Version: %s" % __version__)
-else:
-    logger.debug("RDFLib Version: %s" % __version__)
-del _interactive_mode
 del sys
-
-
-try:
-    chr(0x10FFFF)
-except ValueError:
-    import warnings
-    warnings.warn(
-        'You are using a narrow Python build!\n'
-        'This means that your Python does not properly support chars > 16bit.\n'
-        'On your system chars like c=u"\\U0010FFFF" will have a len(c)==2.\n'
-        'As this can cause hard to debug problems with string processing\n'
-        '(slicing, regexp, ...) later on, we strongly advise to use a wide\n'
-        'Python build in production systems.',
-        ImportWarning)
-    del warnings
 
 
 NORMALIZE_LITERALS = True
@@ -123,7 +133,7 @@ For example:
 
 >>> from rdflib import Literal,XSD
 >>> Literal("01", datatype=XSD.int)
-rdflib.term.Literal(u'1', datatype=rdflib.term.URIRef(u'http://www.w3.org/2001/XMLSchema#integer'))
+rdflib.term.Literal("1", datatype=rdflib.term.URIRef("http://www.w3.org/2001/XMLSchema#integer"))
 
 This flag may be changed at any time, but will only affect literals
 created after that time, previously created literals will remain
@@ -153,19 +163,38 @@ In particular, this determines how the rich comparison operators for
 Literal work, eq, __neq__, __lt__, etc.
 """
 
-from rdflib.term import (
-    URIRef, BNode, Literal, Variable)
 
-from rdflib.namespace import Namespace
+from rdflib.graph import ConjunctiveGraph, Dataset, Graph
+from rdflib.namespace import (
+    BRICK,
+    CSVW,
+    DC,
+    DCAT,
+    DCMITYPE,
+    DCTERMS,
+    DOAP,
+    FOAF,
+    ODRL2,
+    ORG,
+    OWL,
+    PROF,
+    PROV,
+    QB,
+    RDF,
+    RDFS,
+    SDO,
+    SH,
+    SKOS,
+    SOSA,
+    SSN,
+    TIME,
+    VANN,
+    VOID,
+    XMLNS,
+    XSD,
+    Namespace,
+)
+from rdflib.term import BNode, IdentifiedNode, Literal, URIRef, Variable
 
-from rdflib.graph import Dataset, Graph, ConjunctiveGraph
-
-from rdflib.namespace import RDF, RDFS, OWL, XSD
-
-from rdflib import plugin
-from rdflib import query
-# tedious sop to flake8
-assert plugin
-assert query
-
-from rdflib import util
+from rdflib import plugin, query, util  # isort:skip
+from rdflib.container import *  # isort:skip # noqa:F401,F403
