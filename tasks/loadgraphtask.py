@@ -61,7 +61,7 @@ class LoadGraphTask(QgsTask):
         self.geojsonlayer={"type":"FeatureCollection","features":[]}
         for key in data:
             QgsMessageLog.logMessage(str(data[key]),MESSAGE_CATEGORY, Qgis.Info)
-            if "@context" in data[key] and "body" in data[key] and "target" in data[key] and "selector" in data[key]["target"] and "type" in data[key]["target"]["selector"] and data[key]["target"]["selector"]["type"]=="GeoSelector" and data[key]["@context"]=="http://www.w3.org/ns/anno.jsonld":
+            if "body" in data[key] and "target" in data[key] and "selector" in data[key]["target"] and "type" in data[key]["target"]["selector"] and data[key]["target"]["selector"]["type"]=="GeoSelector" and data[key]["@context"]=="http://www.w3.org/ns/anno.jsonld":
                 geom=QgsGeometry.fromWkt(str(data[key]["target"]["selector"]["value"]))
                 feat={"type":"Feature","properties":{},"geometry":json.loads(geom.asJson())}
                 if "id" in data[key]:

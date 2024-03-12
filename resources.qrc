@@ -3,6 +3,10 @@
     <file>resources/icons/circleanno.png</file>
     <file>resources/icons/class.png</file>
     <file>resources/icons/classlink.png</file>
+    <file>resources/icons/geoendpoint.png</file>
+    <file>resources/icons/geojson.png</file>
+    <file>resources/icons/jsonld.png</file>
+    <file>resources/icons/linkeddata.png</file>
     <file>resources/icons/searchclass.png</file>
     <file>resources/icons/objectproperty.png</file>
     <file>resources/icons/pointanno.png</file>

@@ -29,6 +29,7 @@ from qgis.PyQt.QtGui import QColor
 from qgis.gui import QgsMapToolIdentifyFeature, QgsHighlight
 
 # Initialize Qt resources from file resources.py
+from .resources import *
 import os.path
 import sys
 
@@ -59,6 +60,12 @@ class GeoWebAnnotation:
     currentLayer=None
     
     exportNameSpace=None
+
+    exportIdCol=None
+
+    exportSetClass=None
+
+    licenseToURi={"CC0":"","CC BY-SA 4.0":""}
 
     def __init__(self, iface):
         self.iface = iface
@@ -91,6 +98,7 @@ class GeoWebAnnotation:
 
     def create_annotation_layer(self,layername):
         QgsMessageLog.logMessage("Create annotation layer", MESSAGE_CATEGORY, Qgis.Info)
+
           
     def export_annotation_layer(self,layername):
         QgsMessageLog.logMessage("Export annotation layer", MESSAGE_CATEGORY, Qgis.Info)
@@ -113,7 +121,7 @@ class GeoWebAnnotation:
 
     def choose_rectangle_mapping_tool(self):
         QgsMessageLog.logMessage("Selected rectangle mapping tool", MESSAGE_CATEGORY, Qgis.Info)
-        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface.mapCanvas(),self.triplestoreconf,self.languagemap) )
+        self.iface.mapCanvas().setMapTool( RectangleMapTool(self.iface,self.triplestoreconf,self.languagemap) )
 
     def choose_select_mapping_tool(self):
         QgsMessageLog.logMessage("Selected select mapping tool", MESSAGE_CATEGORY, Qgis.Info)
@@ -223,6 +231,8 @@ class GeoWebAnnotation:
     def saveLayer(self):
         if self.dlg.exportFormatComboBox.currentText()=="GeoJSON-LD":
             self.exportLayerAsGeoJSONLD()
+        elif self.dlg.exportFormatComboBox.currentText()=="Web Annotation JSON-LD":
+            self.exportLayerAsWebAnnotation()
         elif self.dlg.exportFormatComboBox.currentText()=="JSON-LD":
             self.exportLayer(None, None, None, None, None, None, False)
         else:
@@ -239,7 +249,7 @@ class GeoWebAnnotation:
             ttlstring=self.layerToTTLString(layer,urilist,classurilist,includelist,proptypelist,valuemappings,valuequeries)
         else:
             filename, _filter = QFileDialog.getSaveFileName(
-                self.dlg, "Select   output file ","", "Linked Data (*.ttl *.n3 *.nt)",)
+                self.dlg, "Select output file ","", "Linked Data (*.ttl *.n3 *.nt)",)
             if filename=="":
                 return
             ttlstring=self.layerToTTLString(layer,urilist,classurilist,includelist,proptypelist,valuemappings,valuequeries)
@@ -248,9 +258,10 @@ class GeoWebAnnotation:
             splitted=filename.split(".")
             exportNameSpace=""
             exportSetClass=""
-            with open(filename, 'w') as output_file:
-                output_file.write(g.serialize(format=splitted[len(splitted)-1]).decode("utf-8"))
-                #iface.messageBar().pushMessage("export layer successfully!", "OK", level=Qgis.Success)
+            g.serialize(filename,format=splitted[len(splitted) - 1])
+            #with open(filename, 'w') as output_file:
+            #    output_file.write(.decode("utf-8"))
+            #    #iface.messageBar().pushMessage("export layer successfully!", "OK", level=Qgis.Success)
 
     ## Converts a QGIS layer to TTL with or withour a given column mapping.
     #  @param self The object pointer. 
@@ -269,7 +280,7 @@ class GeoWebAnnotation:
             namespace="http://www.github.com/sparqlunicorn#"
         else:
             namespace=self.exportNameSpace
-        if self.exportIdCol=="":
+        if self.exportIdCol==None or self.exportIdCol=="":
             idcol="id"
         else:
             idcol=self.exportIdCol
@@ -388,40 +399,92 @@ class GeoWebAnnotation:
         return ttlstring
 
 
+    def exportLayerAsWebAnnotation(self):
+        print("WebAnnotationExport")
+        annoresult={}
+        filename, _filter = QFileDialog.getSaveFileName(self.dlg, "Select   output file ", "", "GeoJSON-LD (*.json)", )
+        if filename == "":
+            return
+        layers = QgsProject.instance().layerTreeRoot().children()
+        selectedLayerIndex = self.dlg.selectAnnotationLayerComboBox.currentText()
+        layers = QgsProject.instance().mapLayersByName(selectedLayerIndex)
+        layer = layers[0]
+        fieldnames = [field.name() for field in layer.fields()]
+        currentgeo = {}
+        for f in layer.getFeatures():
+            geom = f.geometry()
+            curanno = {"body": [{}], "target": {"selector": {"type":"WktSelector"}}}
+            curanno["target"]["selector"]["value"]=geom.asWkt()
+            motivation=""
+            for prop in fieldnames:
+                if prop=="id":
+                    curanno["id"]=f[prop]
+                elif prop=="target":
+                    curanno["target"]["source"]=f[prop]
+                elif prop=="creator" and f[prop]!=None and f[prop]!="":
+                    curanno["creator"]=f[prop]
+                elif prop=="license" and f[prop]!=None and f[prop]!="":
+                    curanno["license"]=f[prop]
+                elif prop=="motivation":
+                    motivation=f[prop]
+                elif prop.startswith("body"):
+                    curanno["body"][-1][str(prop).replace("body.","")]=f[prop]
+            if "id" not in curanno:
+                curanno["id"]="12345"
+            if motivation!=None:
+                curanno["body"][0]["motivation"]=motivation
+            if curanno["id"] in annoresult:
+                annoresult[curanno["id"]]["body"].append(curanno["body"][0])
+                if ("source" in annoresult[curanno["id"]]["target"] and "source" in curanno["target"]
+                        and annoresult[curanno["id"]]["target"]["source"]!=None
+                        and annoresult[curanno["id"]]["target"]["source"]==curanno["target"]["source"]):
+                    if annoresult[curanno["id"]]["target"]["selector"]["value"]!=curanno["target"]["selector"]["value"]:
+                        annoresult["target"]=curanno["id"]["target"]
+            else:
+                annoresult[curanno["id"]]=curanno
+        f = open(filename, "w")
+        f.write(json.dumps(annoresult,indent=2))
+        f.close()
+        return
+
+
+
+
+
     def exportLayerAsGeoJSONLD(self):
         filename, _filter = QFileDialog.getSaveFileName(self.dlg, "Select   output file ","", "GeoJSON-LD (*.json)",)
         if filename=="":
             return
         context={
-    "geojson": "https://purl.org/geojson/vocab#",
-    "Feature": "geojson:Feature",
-    "FeatureCollection": "geojson:FeatureCollection",
-    "GeometryCollection": "geojson:GeometryCollection",
-    "LineString": "geojson:LineString",
-    "MultiLineString": "geojson:MultiLineString",
-    "MultiPoint": "geojson:MultiPoint",
-    "MultiPolygon": "geojson:MultiPolygon",
-    "Point": "geojson:Point",
-    "Polygon": "geojson:Polygon",
-    "bbox": {
-      "@container": "@list",
-      "@id": "geojson:bbox"
-    },
-    "coordinates": {
-      "@container": "@list",
-      "@id": "geojson:coordinates"
-    },
-    "features": {
-      "@container": "@set",
-      "@id": "geojson:features"
-    },
-    "geometry": "geojson:geometry",
-    "id": "@id",
-    "properties": "geojson:properties",
-    "type": "@type",
-    "description": "http://purl.org/dc/terms/description",
-    "title": "http://purl.org/dc/terms/title"
-  }
+            "geojson": "https://purl.org/geojson/vocab#",
+            "Feature": "geojson:Feature",
+            "FeatureCollection": "geojson:FeatureCollection",
+            "GeometryCollection": "geojson:GeometryCollection",
+            "LineString": "geojson:LineString",
+            "MultiLineString": "geojson:MultiLineString",
+            "MultiPoint": "geojson:MultiPoint",
+            "MultiPolygon": "geojson:MultiPolygon",
+            "Point": "geojson:Point",
+            "Polygon": "geojson:Polygon",
+            "bbox": {
+              "@container": "@list",
+              "@id": "geojson:bbox"
+            },
+            "coordinates": {
+              "@container": "@list",
+              "@id": "geojson:coordinates"
+            },
+            "features": {
+              "@container": "@set",
+              "@id": "geojson:features"
+            },
+            "geometry": "geojson:geometry",
+            "id": "@id",
+            "properties": "geojson:properties",
+            "type": "@type",
+            "description": "http://purl.org/dc/terms/description",
+            "title": "http://purl.org/dc/terms/title"
+          }
         layers = QgsProject.instance().layerTreeRoot().children()
         selectedLayerIndex = self.dlg.selectAnnotationLayerComboBox.currentText()
         layers = QgsProject.instance().mapLayersByName(selectedLayerIndex)

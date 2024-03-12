@@ -184,6 +184,6 @@ class SearchDialog(QDialog, FORM_CLASS):
                 item2 = QTableWidgetItem()
                 item2.setText(self.tripleStoreEdit.currentText())
                 item2.setData(UIUtils.dataslot_nodetype, self.triplestoreconf[self.tripleStoreEdit.currentIndex()]["resource"])
-                self.table.setItem(self.currentrow, self.currentcol, item)
+                #self.table.setItem(self.currentrow, self.currentcol, item)
                 self.table.setItem(self.currentrow, (self.currentcol), item2)
         self.close()

@@ -2,6 +2,7 @@ from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.QtGui import QStandardItem
 from qgis.PyQt import uic
 import os.path
+import uuid
 
 from ..util.ui.uiutils import UIUtils
 from .util.searchdialog import SearchDialog
@@ -59,6 +60,7 @@ class AddAnnotationDialog(QDialog, FORM_CLASS):
             item.setData("http://www.w3.org/2001/XMLSchema#string", UIUtils.dataslot_annotype)
             item.setData(self.creatorLineEdit.text(), UIUtils.dataslot_annocreator)
             item.setData(self.chooseLanguageComboBox.currentText(), UIUtils.dataslot_language)
+            item.setData(str(uuid.uuid4()),UIUtils.dataslot_annoid)
             self.selectionListView.appendRow(item)
             self.close()
         elif self.annotationTypeCBox.currentText()=="TextAnnotation" and self.textAnnotationEdit.toPlainText()!="":
@@ -73,6 +75,7 @@ class AddAnnotationDialog(QDialog, FORM_CLASS):
             item.setData("http://www.w3.org/2001/XMLSchema#string", UIUtils.dataslot_annotype)
             item.setData(self.creatorLineEdit.text(), UIUtils.dataslot_annocreator)
             item.setData(self.chooseLanguageComboBox.currentText(), UIUtils.dataslot_language)
+            item.setData(str(uuid.uuid4()),UIUtils.dataslot_annoid)
             self.selectionListView.appendRow(item)
             self.close()
 

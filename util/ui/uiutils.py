@@ -8,6 +8,9 @@ from qgis.PyQt.QtCore import Qt, QSize
 from qgis.PyQt.QtWidgets import QCompleter
 from qgis.PyQt.QtCore import QRegExp
 
+import uuid
+
+
 class UIUtils:
 
     circleannoicon=QIcon(":/icons/resources/icons/circleanno.png")
@@ -15,6 +18,8 @@ class UIUtils:
     classlinkicon = QIcon(":/icons/resources/icons/classlink.png")
     searchclassicon = QIcon(":/icons/resources/icons/searchclass.png")
     geoendpointicon = QIcon(":/icons/resources/icons/geoendpoint.png")
+    geojsonicon = QIcon(":/icons/resources/icons/geojson.png")
+    jsonldicon = QIcon(":/icons/resources/icons/jsonld.png")
     rdffileicon = QIcon(":/icons/resources/icons/rdffile.png")
     objectpropertyicon = QIcon(":/icons/resources/icons/objectproperty.png")
     pointannoicon=QIcon(":/icons/resources/icons/pointanno.png")
@@ -48,6 +53,10 @@ class UIUtils:
     dataslot_annovalue= 265
 
     dataslot_annovaluetype= 266
+
+    dataslot_nodetype= 267
+
+    dataslot_annoid= 268
 
     @staticmethod
     def openListURL(item):
@@ -96,6 +105,15 @@ class UIUtils:
                 else:
                     cbox.addItem(item)
         cbox.setCurrentIndex(0)
+
+    @staticmethod
+    def createExportAnnoCBox(cbox):
+        cbox.addItem(UIUtils.geojsonicon,"GeoJSON-LD")
+        cbox.addItem(UIUtils.rdffileicon, "Web Annotation JSON-LD")
+        cbox.addItem(UIUtils.rdffileicon, "JSON-LD")
+        cbox.addItem(UIUtils.rdffileicon, "TTL")
+        cbox.setCurrentIndex(1)
+
 
     @staticmethod
     def createLanguageSelectionCBox(cbox,languagemap):

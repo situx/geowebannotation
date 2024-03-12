@@ -25,7 +25,9 @@
 import os
 
 from qgis.PyQt import uic
+from qgis.core import QgsProject, Qgis,QgsMapLayerProxyModel
 from qgis.PyQt import QtWidgets
+from ..util.ui.uiutils import UIUtils
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'ui/geowebannotation_dialog_base.ui'))
@@ -35,3 +37,8 @@ class GeoWebAnnotationDialog(QtWidgets.QDialog, FORM_CLASS):
         """Constructor."""
         super(GeoWebAnnotationDialog, self).__init__(parent)
         self.setupUi(self)
+        self.layerToAnnotateComboBox.setFilters(
+            QgsMapLayerProxyModel.PointLayer | QgsMapLayerProxyModel.LineLayer | QgsMapLayerProxyModel.PolygonLayer | QgsMapLayerProxyModel.NoGeometry)
+        self.selectAnnotationLayerComboBox.setFilters(
+            QgsMapLayerProxyModel.PointLayer | QgsMapLayerProxyModel.LineLayer | QgsMapLayerProxyModel.PolygonLayer | QgsMapLayerProxyModel.NoGeometry)
+        UIUtils.createExportAnnoCBox(self.exportFormatComboBox)

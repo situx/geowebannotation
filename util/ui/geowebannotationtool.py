@@ -64,10 +64,10 @@ class CircleMapTool(QgsMapTool):
 
     def reset(self):
         self.status = 0
-        self.rb.reset(True)
+        self.rb.reset()
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.rb.reset()
         QgsMapTool.deactivate(self)
 		
     def rbcircle(self,rb, center, edgePoint, N):
@@ -148,10 +148,10 @@ class PolygonMapTool(QgsMapTool):
     def reset(self):
         self.status = 0
         self.layercoords=[]
-        self.rb.reset(True)
+        self.rb.reset()
 
     def deactivate(self):
-        self.rb.reset(True)
+        self.rb.reset()
         self.layercoords = []
         QgsMapTool.deactivate(self)
 
@@ -167,8 +167,8 @@ class RectangleMapTool(QgsMapToolEmitPoint):
     point4=""
     chosen=False
 
-    def __init__(self, canvas,triplestoreconf,languagemap):
-        self.canvas = canvas.mapCanvas()
+    def __init__(self, iface,triplestoreconf,languagemap):
+        self.canvas = iface.mapCanvas()
         self.triplestoreconf=triplestoreconf
         self.languagemap=languagemap
         QgsMapToolEmitPoint.__init__(self, self.canvas)
