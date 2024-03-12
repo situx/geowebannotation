@@ -431,8 +431,8 @@ class GeoWebAnnotation:
                     curanno["body"][-1][str(prop).replace("body.","")]=f[prop]
             if "id" not in curanno:
                 curanno["id"]="12345"
-            if motivation!=None:
-                curanno["body"][0]["motivation"]=motivation
+            if motivation!=None and motivation!="":
+                curanno["body"][-1]["motivation"]=motivation
             if curanno["id"] in annoresult:
                 annoresult[curanno["id"]]["body"].append(curanno["body"][0])
                 if ("source" in annoresult[curanno["id"]]["target"] and "source" in curanno["target"]
