@@ -122,17 +122,20 @@ class PolygonMapTool(QgsMapTool):
                 QgsMessageLog.logMessage(str(layer), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(self.layercoords), MESSAGE_CATEGORY, Qgis.Info)
                 #for lyr in self.iface.layerTreeView().activeLayer():
+                geomstringlist=[]
                 for feat in self.iface.activeLayer().getFeatures():
                     geom = feat.geometry()
                     QgsMessageLog.logMessage(str(geom.asWkt())+" - "+str(rb2geom.asWkt()), MESSAGE_CATEGORY, Qgis.Info)
                     if rb2geom.intersects(geom):
+                        geomstringlist.append(str(geom.asWkt()))
                         QgsMessageLog.logMessage("Intersects: "+str(feat.id()), MESSAGE_CATEGORY,
                                                  Qgis.Info)
                         instancelist.append(feat)
                         #feat.append(feat.id())
                 QgsMessageLog.logMessage(str(len(instancelist)), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(instancelist), MESSAGE_CATEGORY, Qgis.Info)
-                annod=AnnotationDialog(instancelist, self.iface.activeLayer(), rb2geom, self.triplestoreconf,self.languagemap)
+                QgsMessageLog.logMessage(str(geomstringlist), MESSAGE_CATEGORY, Qgis.Info)
+                annod=AnnotationDialog(instancelist,geomstringlist, self.iface.activeLayer(), rb2geom, self.triplestoreconf,self.languagemap)
                 annod.exec()
             else:
                 self.reset()

@@ -414,7 +414,10 @@ class GeoWebAnnotation:
         for f in layer.getFeatures():
             geom = f.geometry()
             curanno = {"body": [{}], "target": {"selector": {"type":"WktSelector"}}}
-            curanno["target"]["selector"]["value"]=geom.asWkt()
+            if "the_geom" in fieldnames:
+                curanno["target"]["selector"]["value"] =f["the_geom"]
+            else:
+                curanno["target"]["selector"]["value"]=geom.asWkt()
             motivation=""
             for prop in fieldnames:
                 if prop=="id":
