@@ -123,6 +123,7 @@ class PolygonMapTool(QgsMapTool):
                 QgsMessageLog.logMessage(str(self.layercoords), MESSAGE_CATEGORY, Qgis.Info)
                 #for lyr in self.iface.layerTreeView().activeLayer():
                 geomstringlist=[]
+                crs="http://www.opengis.net/def/crs/EPSG/0/"+str(self.iface.activeLayer().crs().authid()).replace("EPSG:","")
                 for feat in self.iface.activeLayer().getFeatures():
                     geom = feat.geometry()
                     QgsMessageLog.logMessage(str(geom.asWkt())+" - "+str(rb2geom.asWkt()), MESSAGE_CATEGORY, Qgis.Info)
@@ -135,7 +136,7 @@ class PolygonMapTool(QgsMapTool):
                 QgsMessageLog.logMessage(str(len(instancelist)), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(instancelist), MESSAGE_CATEGORY, Qgis.Info)
                 QgsMessageLog.logMessage(str(geomstringlist), MESSAGE_CATEGORY, Qgis.Info)
-                annod=AnnotationDialog(instancelist,geomstringlist, self.iface.activeLayer(), rb2geom, self.triplestoreconf,self.languagemap)
+                annod=AnnotationDialog(instancelist,geomstringlist,crs, self.iface.activeLayer(), rb2geom, self.triplestoreconf,self.languagemap)
                 annod.exec()
             else:
                 self.reset()

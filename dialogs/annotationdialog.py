@@ -7,7 +7,7 @@ from qgis.PyQt import QtGui
 from qgis.PyQt import uic
 import os.path
 from qgis.core import Qgis, QgsMessageLog
-from qgis.core import QgsFeature, QgsVectorLayer, QgsField, QgsProject
+from qgis.core import QgsFeature, QgsGeometry, QgsVectorLayer, QgsField, QgsProject
 
 from ..util.ui.uiutils import UIUtils
 from .addannotationdialog import AddAnnotationDialog
@@ -19,7 +19,7 @@ MESSAGE_CATEGORY="GeoWebAnnotation"
 
 class AnnotationDialog(QDialog, FORM_CLASS):
 	
-    def __init__(self,selectedresources,activelayer,selectiongeometry,triplestoreconf,languagemap={},resultlayer=None):
+    def __init__(self,selectedresources,geomstringlist,crs,activelayer,selectiongeometry,triplestoreconf,languagemap={},resultlayer=None):
         super(AnnotationDialog, self).__init__()
         self.setupUi(self)
         self.selectedresources = selectedresources
@@ -28,6 +28,8 @@ class AnnotationDialog(QDialog, FORM_CLASS):
         self.model2 = QtGui.QStandardItemModel()
         self.selectiongeometry=selectiongeometry
         self.activelayer=activelayer
+        self.crs=crs
+        self.geomstringlist=geomstringlist
         self.selectionListView.setModel(self.model)
         self.annotationListView.setModel(self.model2)
         self.addAnnotationButton.clicked.connect(lambda: AddAnnotationDialog(self.model2,self.activelayer.name(),self.triplestoreconf).exec())
@@ -50,6 +52,8 @@ class AnnotationDialog(QDialog, FORM_CLASS):
                               QgsField("creator", QVariant.String),
                               QgsField("relation", QVariant.String),
                               QgsField("target", QVariant.String),
+                              QgsField("target.selector.value", QVariant.String),
+                              QgsField("target.selector.crs", QVariant.String),
                               QgsField("body.language", QVariant.String),
                               QgsField("body.value", QVariant.String),
                               QgsField("body.valuetype", QVariant.String)
@@ -76,7 +80,8 @@ class AnnotationDialog(QDialog, FORM_CLASS):
             findex=0
             for index in range(self.model2.rowCount()):
                 feature = QgsFeature()
-                # feature.setGeometry(instance.geometry())
+                #QgsMessageLog.logMessage('Started task "{}"'.format(instance.geometry()), MESSAGE_CATEGORY, Qgis.Info)
+                #feature.setGeometry(QgsGeometry.fromWkt(self.geomstringlist[findex]))
                 feature.setId(findex)
                 addarray=[
                     str(self.model2.item(index).data(UIUtils.dataslot_target))+"_"+str(instance.id())+"_anno",
@@ -86,6 +91,8 @@ class AnnotationDialog(QDialog, FORM_CLASS):
                     str(self.model2.item(index).data(UIUtils.dataslot_annocreator)),
                     str(self.model2.item(index).data(UIUtils.dataslot_relation)),
                     str(self.model2.item(index).data(UIUtils.dataslot_target))+"_"+str(instance.id()),
+                    str(self.geomstringlist[findex]),
+                    str(self.crs),
                     str(self.model2.item(index).data(UIUtils.dataslot_language)),
                     str(self.model2.item(index).data(UIUtils.dataslot_annovalue)),
                     str(self.model2.item(index).data(UIUtils.dataslot_annovaluetype))
@@ -119,6 +126,8 @@ class AnnotationDialog(QDialog, FORM_CLASS):
             str(self.model2.item(index).data(UIUtils.dataslot_annocreator)),
             str(self.model2.item(index).data(UIUtils.dataslot_relation)),
             str(self.model2.item(index).data(UIUtils.dataslot_target)),
+            str(self.selectiongeometry.asWkt()),
+            str(self.crs),
             str(self.model2.item(index).data(UIUtils.dataslot_language)),
             str(self.model2.item(index).data(UIUtils.dataslot_annovalue)),
             str(self.model2.item(index).data(UIUtils.dataslot_annovaluetype))
