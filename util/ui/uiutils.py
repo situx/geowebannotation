@@ -1,12 +1,12 @@
-from PyQt5.QtGui import QValidator
-from PyQt5.QtWidgets import QApplication
+from qgis.PyQt.QtGui import QValidator
+from qgis.PyQt.QtWidgets import QApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtCore import Qt, QUrl, QEvent
 from qgis.PyQt.QtGui import QDesktopServices, QStandardItemModel
 from qgis.PyQt.QtGui import QStandardItem
 from qgis.PyQt.QtCore import Qt, QSize
 from qgis.PyQt.QtWidgets import QCompleter
-from qgis.PyQt.QtCore import QRegExp
+from qgis.PyQt.QtCore import QRegularExpression
 
 import uuid
 
@@ -30,7 +30,7 @@ class UIUtils:
     rectangleannoicon = QIcon(":/icons/resources/icons/rectangleanno.png")
     geowebannotationicon = QIcon(":/icons/resources/icons/icon.png")
 
-    urlregex = QRegExp("http[s]?://(?:[a-zA-Z#]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+    urlregex = QRegularExpression("http[s]?://(?:[a-zA-Z#]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
     dataslot_conceptURI=256
 

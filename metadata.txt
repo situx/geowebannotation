@@ -7,6 +7,7 @@ name=GeoWebAnnotation
 qgisMinimumVersion=3.0
 description=This plugin allows to annotate features of loaded layers according to the W3C web annotation model.
 version=0.1
+supportsQt6=yes
 author=Timo Homburg
 email=timo.homburg@gmx.de
 
