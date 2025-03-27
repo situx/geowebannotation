@@ -28,7 +28,7 @@ class CircleMapTool(QgsMapTool):
         self.rb.setColor(QColor(255, 0, 0, 100))
 
     def canvasPressEvent(self, e):
-        if not e.button() == Qt.LeftButton:
+        if not e.button() == Qt.MouseButton.LeftButton:
             return
         self.status = 1
         self.center = self.toMapCoordinates(e.pos())
@@ -45,7 +45,7 @@ class CircleMapTool(QgsMapTool):
         self.move.emit()
 
     def canvasReleaseEvent(self, e):
-        if not e.button() == Qt.LeftButton:
+        if not e.button() == Qt.MouseButton.LeftButton:
             return None
         self.status = 0
         if self.rb.numberOfVertices() > 3:
@@ -103,7 +103,7 @@ class PolygonMapTool(QgsMapTool):
                 self.rb.removeLastPoint()
 
     def canvasPressEvent(self, e):
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.MouseButton.LeftButton:
             if self.status == 0:
                 self.rb.reset(QgsWkbTypes.PolygonGeometry)
                 self.status = 1
@@ -308,7 +308,7 @@ class LineMapTool(QgsMapTool):
 
     def canvasPressEvent(self, e):
         QgsMessageLog.logMessage("Canvas Released Event!!! ", MESSAGE_CATEGORY, Qgis.Info)
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.MouseButton.LeftButton:
             self.point=self.toMapCoordinates(e.pos())
             self.rb.addPoint(self.point)
             QgsMessageLog.logMessage("Selected point: " + str(self.point), MESSAGE_CATEGORY, Qgis.Info)
@@ -348,7 +348,7 @@ class PointMapTool(QgsMapTool):
 
     def canvasReleaseEvent(self, e):
         QgsMessageLog.logMessage("Canvas Released Event!!! ", MESSAGE_CATEGORY, Qgis.Info)
-        if e.button() == Qt.LeftButton:
+        if e.button() == Qt.MouseButton.LeftButton:
             self.point=self.toMapCoordinates(e.pos())
             self.rb.addPoint(self.point)
             QgsMessageLog.logMessage("Selected point: " + str(self.point), MESSAGE_CATEGORY, Qgis.Info)

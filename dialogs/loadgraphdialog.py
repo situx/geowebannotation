@@ -43,9 +43,9 @@ class LoadGraphDialog(QtWidgets.QDialog, FORM_CLASS):
     def check_state(self,sender):
         validator = sender.validator()
         state = validator.validate(sender.text(), 0)[0]
-        if state == QValidator.Acceptable:
+        if state == QValidator.State.Acceptable:
             color = '#c4df9b' # green
-        elif state == QValidator.Intermediate:
+        elif state == QValidator.State.Intermediate:
             color = '#fff79a' # yellow
         else:
             color = '#f6989d' # red
@@ -59,7 +59,7 @@ class LoadGraphDialog(QtWidgets.QDialog, FORM_CLASS):
             fileNames = dialog.selectedFiles()
             filepath=fileNames[0].split(".")
             progress = QProgressDialog("Loading Graph: "+fileNames[0], "Abort", 0, 0, self)
-            progress.setWindowModality(Qt.WindowModal)
+            progress.setWindowModality(Qt.WindowModality.WindowModal)
             progress.setCancelButton(None)
             self.qtask=LoadGraphTask("Loading Graph: "+fileNames[0], fileNames[0],self,self.dlg,progress)
             QgsApplication.taskManager().addTask(self.qtask)
@@ -67,7 +67,7 @@ class LoadGraphDialog(QtWidgets.QDialog, FORM_CLASS):
     def loadURI(self):
         if self.graphURIEdit.text()!="":
             progress = QProgressDialog("Loading Graph from "+self.graphURIEdit.text(), "Abort", 0, 0, self)
-            progress.setWindowModality(Qt.WindowModal)
+            progress.setWindowModality(Qt.WindowModality.WindowModal)
             progress.setCancelButton(None)
             self.qtask=LoadGraphTask("Loading Graph: "+self.graphURIEdit.text(), self.graphURIEdit.text(),self,self.dlg,self.maindlg,self.triplestoreconf[0]["geoconceptquery"],self.triplestoreconf,progress)
             QgsApplication.taskManager().addTask(self.qtask)

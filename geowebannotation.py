@@ -525,7 +525,7 @@ class GeoWebAnnotation:
     def buildLoadGraphDialog(self):	
         self.searchTripleStoreDialog = LoadGraphDialog(None,self.dlg,self)	
         self.searchTripleStoreDialog.setWindowTitle("Load Graph")	
-        self.searchTripleStoreDialog.exec_()
+        self.searchTripleStoreDialog.exec()
 
 
     def run(self):
